@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@nestjs/platform-node": "^12.5.1"
+  }
+}
