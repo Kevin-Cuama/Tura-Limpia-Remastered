@@ -1,9 +1,10 @@
+
 import { Config } from '../../../configs/configuracion.js';
 import { Sequelize } from 'sequelize-typescript';
 
 export const models = [];
 
-export const TURADB= {
+export const TURADB = {
   provide: 'SEQUELIZE_CITAS',
   useFactory: async () => {
     const sequelize = new Sequelize({
@@ -21,7 +22,21 @@ export const TURADB= {
       password: Config.dbContrasenna,
       database: Config.dbBaseDatos,
     });
+
     sequelize.addModels(models);
+
+    // Verificar la conexión real con PostgreSQL
+    try {
+      await sequelize.authenticate();
+
+      console.log('Conexión exitosa con PostgreSQL');
+      console.log('Base de datos:', Config.dbBaseDatos);
+    } catch (error) {
+      console.error('Error al conectar con PostgreSQL:', error);
+      throw error;
+    }
+
     return sequelize;
   },
 };
+
