@@ -10,4 +10,7 @@ export class Config {
   static readonly dbUsuario = process.env.DB_USER;
   static readonly dbContrasenna = process.env.DB_PASS;
   static readonly dbBaseDatos = process.env.DB_NAME;
+  static readonly jwtSecret = process.env.JWT_SECRET;
+  static readonly jwtExpiresIn = process.env.JWT_EXPIRES_IN ?? '8h';
+  static readonly bcryptSaltos = Number(process.env.BCRYPT_SALTOS ?? 10);
 }

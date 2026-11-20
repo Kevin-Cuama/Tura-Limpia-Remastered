@@ -2,7 +2,9 @@
 import { Config } from '../../../configs/configuracion.js';
 import { Sequelize } from 'sequelize-typescript';
 
-export const models = [];
+import { Administrador } from '../../administrador/models/administrador.model.js';
+
+export const models = [Administrador];
 
 export const TURADB = {
   provide: 'SEQUELIZE_CITAS',
