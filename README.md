@@ -10,7 +10,8 @@ La solución busca facilitar la organización de los recursos operativos mediant
 | Módulo | Qué permite |
 |--------|-------------|   
 
-| Acceso | Inicio y cierre de sesión del administrador,control de acceso al panel y creación del administrador inicial.  
+| Acceso | Inicio y cierre de sesión del administrador,control de acceso al panel y creación del administrador inicial.|  
+
 
 
 ## 📂 Estructura del Repositorio
