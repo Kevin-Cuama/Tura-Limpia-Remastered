@@ -6,7 +6,7 @@ La solución busca facilitar la organización de los recursos operativos mediant
 
 ---
 
-## Funcionalidades   
+**Funcionalidades**   
 
 | Módulo | Qué permite |
 |--------|-------------|  
