@@ -5,10 +5,13 @@
 La solución busca facilitar la organización de los recursos operativos mediante una interfaz administrativa que permita registrar, consultar, actualizar y controlar la información necesaria para la ejecución de los servicios de recolección. Además, incluye un dashboard con indicadores que apoya la toma de decisiones operativas.
 
 ---
-##Funcionalidades
-| :--- | :--- |
+##Funcionalidades   
+
 | Módulo | Qué permite |
-| Acceso | Inicio y cierre de sesión del administrador,control de acceso al panel y creación del administrador inicial.
+|--------|-------------|   
+
+| Acceso | Inicio y cierre de sesión del administrador,control de acceso al panel y creación del administrador inicial.  
+
 
 ## 📂 Estructura del Repositorio
 
