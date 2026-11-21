@@ -11,6 +11,12 @@ La solución busca facilitar la organización de los recursos operativos mediant
 | Módulo | Qué permite |
 |--------|-------------|  
 | Acceso | Inicio y cierre de sesión del administrador,control de acceso al panel y creación del administrador inicial.|  
+| Vehiculos | Registro, consulta, edición y desactivación y estado operativo(disponible, en servicio, mantenimiento o fuera de servicio|
+| Conductores | Registro, consulta, edición y desactivación, con documento y licencia únicos, categoria y vencimiento de la licencia. |
+| Barrios y rutas | Gestón de barrios o sectores, creación y edición de rutas suspensión y reactivación |
+| Mapa | Trazado del recorrido de cada ruta sobre un mapa de Buenaventura, con almacenamiento y reconstrucción. |
+| Turnos y programación | Turnos de trabajo, programación  de servicios, validación de disponibilidad y advertencia de conflictos |
+| Dashboard | Indicadores de vehiculos, conductores y rutas, y consulta de los servicios del día con filtros. |
  
 
 
