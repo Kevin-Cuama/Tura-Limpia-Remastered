@@ -1,11 +1,13 @@
 # ♻️ Tura Limpia
 
-**Tura Limpia** es una plataforma web orientada a la gestión y planificación de las operaciones de recolección, permitiendo administrar de manera centralizada la información relacionada con vehículos, conductores, barrios, rutas y programación de servicios.
+**Tura Limpia** es una plataforma web orientada a la gestión y planificación de las operaciones de recolección en Buenaventura, que permite administrar de manera centralizada la información relacionada con vehículos, conductores, barrios, rutas, turnos y programación de servicios.
 
-La solución busca facilitar la organización de los recursos operativos mediante una interfaz administrativa que permita registrar, consultar, actualizar y controlar la información necesaria para la ejecución de los servicios de recolección. Además, la plataforma proporcionará herramientas de visualización y seguimiento mediante indicadores y reportes que apoyen la toma de decisiones operativas.
+La solución busca facilitar la organización de los recursos operativos mediante una interfaz administrativa que permita registrar, consultar, actualizar y controlar la información necesaria para la ejecución de los servicios de recolección. Además, incluye un dashboard con indicadores que apoya la toma de decisiones operativas.
 
 ---
-
+##Funcionalidades
+| Módulo | Qué permite |
+| Acceso | Inicio y cierre de sesión del administrador,control de acceso al panel y creación del administrador inicial.
 ## 📂 Estructura del Repositorio
 
 * `Backend/` — Lógica del servidor, APIs y servicios.
