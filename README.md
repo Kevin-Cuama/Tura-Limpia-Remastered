@@ -16,7 +16,15 @@ La solución busca facilitar la organización de los recursos operativos mediant
 | Barrios y rutas | Gestón de barrios o sectores, creación y edición de rutas suspensión y reactivación |
 | Mapa | Trazado del recorrido de cada ruta sobre un mapa de Buenaventura, con almacenamiento y reconstrucción. |
 | Turnos y programación | Turnos de trabajo, programación  de servicios, validación de disponibilidad y advertencia de conflictos |
-| Dashboard | Indicadores de vehiculos, conductores y rutas, y consulta de los servicios del día con filtros. |
+| Dashboard | Indicadores de vehiculos, conductores y rutas, y consulta de los servicios del día con filtros. |  
+
+## 🛠️ Tecnologias  
+| Capa          | Tecnología  |
+|---------------|-------------|  
+| Frontend      | Angular     |  
+| Backend       | Nest.js     |  
+| Base de datos | PostgreSQL  |
+| Control de versiones | Git, GitHub|
 
 
 ## 📂 Estructura del Repositorio
@@ -27,6 +35,12 @@ La solución busca facilitar la organización de los recursos operativos mediant
 * `Frontend/` — Interfaz de usuario y componentes web.
 * `Evidencias/` — Registros, capturas y soporte de pruebas/avances.
 ---
+
+##⚙️ Requisitos previos
+* Node.js
+* PostgreSQl
+* Git
+* Angular
 
 ## 👥 Equipo de Desarrollo
 
