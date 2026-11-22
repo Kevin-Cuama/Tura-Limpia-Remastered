@@ -38,4 +38,10 @@ export class AutenticacionService {
       },
     };
   }
+
+  cerrarSesion() {
+    return {
+      mensaje: 'Sesión cerrada correctamente.',
+    };
+  }
 }

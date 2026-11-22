@@ -14,4 +14,10 @@ export class AutenticacionController {
       parametros.contrasena,
     );
   }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  cerrarSesion() {
+    return this.autenticacionService.cerrarSesion();
+  }
 }

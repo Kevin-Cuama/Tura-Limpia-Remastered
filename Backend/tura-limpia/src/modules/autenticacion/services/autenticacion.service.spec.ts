@@ -83,4 +83,11 @@ describe('AutenticacionService', () => {
       rol: ERoles.ADMINISTRADOR,
     });
   });
+
+  it('debe cerrar sesión correctamente y retornar mensaje de confirmación', () => {
+    const respuesta = service.cerrarSesion();
+    expect(respuesta).toEqual({
+      mensaje: 'Sesión cerrada correctamente.',
+    });
+  });
 });
