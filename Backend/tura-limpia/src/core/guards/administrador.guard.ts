@@ -10,6 +10,7 @@ import {
   PayloadJWT,
   RequestAutenticado,
 } from '../interfaces/payload-jwt.interface.js';
+import { MensajesError } from '../constants/mensajes-error.js';
 
 @Injectable()
 export class AdministradorGuard implements CanActivate {
@@ -20,18 +21,18 @@ export class AdministradorGuard implements CanActivate {
     const token = this.extraerToken(request);
 
     if (!token) {
-      throw new UnauthorizedException('Token no proporcionado.');
+      throw new UnauthorizedException(MensajesError.TOKEN_NO_PROPORCIONADO);
     }
 
     let payload: PayloadJWT;
     try {
       payload = await this.jwtService.verifyAsync<PayloadJWT>(token);
     } catch {
-      throw new UnauthorizedException('Token inválido o expirado.');
+      throw new UnauthorizedException(MensajesError.TOKEN_INVALIDO_O_EXPIRADO);
     }
 
     if (!payload?.idUsuario || payload.rol !== ERoles.ADMINISTRADOR) {
-      throw new UnauthorizedException('No tienes permisos de administrador.');
+      throw new UnauthorizedException(MensajesError.SIN_PERMISOS_ADMINISTRADOR);
     }
 
     request.usuario = payload;

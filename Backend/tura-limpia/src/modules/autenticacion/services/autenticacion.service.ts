@@ -6,22 +6,21 @@ import {
   ERoles,
   PayloadJWT,
 } from '../../../core/interfaces/payload-jwt.interface.js';
+import { MensajesError } from '../../../core/constants/mensajes-error.js';
 
 @Injectable()
 export class AutenticacionService {
   constructor(private readonly jwtService: JwtService) {}
 
   async iniciarSesion(correo: string, contrasena: string) {
-    const mensajeInvalido = 'Correo o contraseña incorrectos.';
-
     const administrador = await AdministradorRepository.buscarPorCorreo(correo);
     if (!administrador) {
-      throw new UnauthorizedException(mensajeInvalido);
+      throw new UnauthorizedException(MensajesError.CREDENCIALES_INVALIDAS);
     }
 
     const esValida = await bcrypt.compare(contrasena, administrador.contrasena);
     if (!esValida) {
-      throw new UnauthorizedException(mensajeInvalido);
+      throw new UnauthorizedException(MensajesError.CREDENCIALES_INVALIDAS);
     }
 
     const payload: PayloadJWT = {
@@ -37,6 +36,12 @@ export class AutenticacionService {
         nombre: administrador.nombre,
         correo: administrador.correo,
       },
+    };
+  }
+
+  cerrarSesion() {
+    return {
+      mensaje: 'Sesión cerrada correctamente.',
     };
   }
 }
