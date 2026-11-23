@@ -45,10 +45,10 @@ La solución busca facilitar la organización de los recursos operativos mediant
 ## ⚙️ Requisitos previos  
 |programa |versión |descarga| 
 |---------|--------|--------|  
-| Node.js|cualquier reciente|	git-scm.com|  
+| Node.js      |22 o superior (LTS)     |nodejs.org|  
 | PostgreSQl 17|16 (sirve 15 o superior)|postgresql.org/download/windows|
-| Git|
-| Angular|
+| Git          |cualquiera reciente     |git-scm.com|
+| Postman      |cualquiera(opcional     | postman.com/downloads  |
 
 
 Al instalar PostgreSQL: guarda la contraseña que elijas para el usuario postgres, deja el puerto en 5432 y la configuración regional por defecto, y desmarca Stack Builder en la última pantalla  
