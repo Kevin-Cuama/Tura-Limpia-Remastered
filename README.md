@@ -57,9 +57,10 @@ node -v
 
 
 ## 🚀 Instalación y Ejecución 
-**1 clonar el repositorio**  
-git clone https://github.com/Kevin-Cuama/Tura-Limpia-Remastered.git  
-cd Tura-Limpia-Remastered  
+**1 descargar el repositorio**  
+En PowerShell, desde la carpeta donde quieras guardar el proyecto:
+```git clone https://github.com/Kevin-Cuama/Tura-Limpia-Remastered.git  
+cd Tura-Limpia-Remastered ``` 
 git checkout acceso-administrativo  
 **2 crear la base de datos**  
 Abrir la consola de PostgreSQL (pide la contraseña de postgres; no se ve mientras se escribe):  
