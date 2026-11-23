@@ -58,20 +58,55 @@ node -v
 
 ## 🚀 Instalación y Ejecución 
 **1 descargar el repositorio**  
-En PowerShell, desde la carpeta donde quieras guardar el proyecto:
+En PowerShell, desde la carpeta donde quieras guardar el proyecto:  
 `git clone https://github.com/Kevin-Cuama/Tura-Limpia-Remastered.git  
-cd Tura-Limpia-Remastered`
- 
-git checkout acceso-administrativo
+cd Tura-Limpia-Remastered`  
+Cambia a la rama de la entrega 1. Mientras el PR #10 no esté fusionado:  
+`git checkout acceso-administrativo`
   
 **2 crear la base de datos**  
-Abrir la consola de PostgreSQL (pide la contraseña de postgres; no se ve mientras se escribe):  
-& 'C:\Program Files\PostgreSQL\16\bin\psql.exe' -U postgres -h localhost  
-Cuando aparezca postgres=#, escribir una por una:  
-CREATE USER tura WITH PASSWORD 'tura';
+Abre la consola de PostgreSQL. Te pedirá la contraseña de postgres ; no se ve mientras escribes, es normal.
+`& 'C:\Program Files\PostgreSQL\16\bin\psql.exe' -U postgres -h localhost`  
+Cuando aparezca `postgres=#,` escribir una por una:  
+`CREATE USER tura WITH PASSWORD 'tura';
 CREATE DATABASE tura_limpia OWNER tura;
-\q  
-Debe responder CREATE ROLE y CREATE DATABASE. Si dice que ya existen, se continúa. Estas credenciales son solo para desarrollo local.  
+\q ` 
+Debe responder `CREATE ROLE` y `CREATE DATABASE`. Si dice que ya existen, se continúa. Estas credenciales son solo para desarrollo local.  
+**3 Backend**  
+3.1 Instalar dependencias Desde la carpeta del repositorio:  
+`cd Backend\tura-limpia npm install`  
+Los avisos de "vulnerabilities" son normales.No ejecutes `npm audit fix.`  
+3.2 Crear el archivo .env  
+`Copy-Item .env.example .env`  
+Genera una clave secreta y copia el texto que salga:  
+`node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
+Abre el archivo con el Bloc de notas:  
+`notepad .env`  
+Cambia estas líneas, guarda y cierra. Las demás `PORT=3000 , DB_PORT=5432` , etc.) se quedan como vienen.  
+`DB_USER=tura  
+DB_PASS=tura  
+DB_NAME=tura_limpia  
+JWT_SECRET=<pega aquí la clave que generaste>  
+ADMIN_CORREO=admin@turalimpia.com  
+ADMIN_CONTRASENA=Admin12345`  
+3.3 El archivo `.env` nunca se sube a GitHub y no se muestra en capturas.  
+Crear las tablas y los datos de prueba  
+`npm run migrate  
+npm run seed`  
+`migrate` crea 12 tablas. `seed` crea el administrador y datos de prueba (5 vehículos, 5 conductores, 3 rutas, 8 barrios, 3 turnos y 2 programaciones).  
+3.4 Pruebas (opcional)  
+`npm test  
+npm run test:e2e`  
+Deben pasar 21 pruebas unitarias y 7 e2e.  
+3.5 Levantar el backend  
+`npm run start:dev`  
+Está listo cuando aparecen "Conexión exitosa con PostgreSQL" y "Nest application successfully started". Deja esta ventana abierta y no hagas clic dentro de ella.  
+
+
+
+
+
+
 
 
 
