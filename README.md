@@ -4,6 +4,25 @@
 
 La solución busca facilitar la organización de los recursos operativos mediante una interfaz administrativa que permita registrar, consultar, actualizar y controlar la información necesaria para la ejecución de los servicios de recolección. Además, la plataforma proporcionará herramientas de visualización y seguimiento mediante indicadores y reportes que apoyen la toma de decisiones operativas.
 
+**Universidad del Pacífico** · Ingeniería de Sistemas · Seminario de Actualización I
+
+---
+
+## 🛠️ Tecnologías
+
+| Capa | Tecnologías |
+| :--- | :--- |
+| Backend | NestJS 12, TypeScript, Sequelize 6, JWT, bcrypt, Vitest |
+| Base de datos | PostgreSQL |
+| Frontend | _(por definir)_ |
+| Control de versiones | Git y GitHub (ramas y pull requests sobre `Desarrollo`) |
+
+---
+
+## 🚀 Cómo ejecutar y verificar
+
+Las instrucciones para instalar el backend, crear la base de datos, cargar el administrador inicial y los datos de prueba, y verificar el acceso administrativo están en [`Backend/tura-limpia/README.md`](Backend/tura-limpia/README.md).
+
 ---
 
 ## 📂 Estructura del Repositorio
