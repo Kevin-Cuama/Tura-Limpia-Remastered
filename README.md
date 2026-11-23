@@ -48,7 +48,8 @@ La solución busca facilitar la organización de los recursos operativos mediant
 * Git
 * Angular
 
-**🚀 Instalación y Ejecución**
+## 🚀 Instalación y Ejecución  
+
 ## 👥 Equipo de Desarrollo
 
 | Integrante | Rol |
