@@ -7,7 +7,7 @@ La solución busca facilitar la organización de los recursos operativos mediant
 ---
 
 **Acceso a la plataforma**
-Enlace:
+**Enlace:**
 **Usuario de prueba** [Correo]/[Contraseña]
 
 **Funcionalidades**   
