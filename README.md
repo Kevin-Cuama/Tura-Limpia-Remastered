@@ -42,7 +42,7 @@ La solución busca facilitar la organización de los recursos operativos mediant
 * `Evidencias/` — Registros, capturas y soporte de pruebas/avances.
 ---
 
-## ⚙️ Requisitos previos  
+## ⚙️ 1 Requisitos previos  
 |programa |versión |descarga| 
 |---------|--------|--------|  
 | Node.js      |22 o superior (LTS)     |nodejs.org|  
@@ -57,14 +57,14 @@ node -v
 
 
 ## 🚀 Instalación y Ejecución 
-**1 descargar el repositorio**  
+**2 descargar el repositorio**  
 En PowerShell, desde la carpeta donde quieras guardar el proyecto:  
 `git clone https://github.com/Kevin-Cuama/Tura-Limpia-Remastered.git  
 cd Tura-Limpia-Remastered`  
 Cambia a la rama de la entrega 1. Mientras el PR #10 no esté fusionado:  
 `git checkout acceso-administrativo`
   
-**2 crear la base de datos**  
+**3 crear la base de datos**  
 Abre la consola de PostgreSQL. Te pedirá la contraseña de postgres ; no se ve mientras escribes, es normal.
 `& 'C:\Program Files\PostgreSQL\16\bin\psql.exe' -U postgres -h localhost`  
 Cuando aparezca `postgres=#,` escribir una por una:  
@@ -72,11 +72,12 @@ Cuando aparezca `postgres=#,` escribir una por una:
 CREATE DATABASE tura_limpia OWNER tura;
 \q ` 
 Debe responder `CREATE ROLE` y `CREATE DATABASE`. Si dice que ya existen, se continúa. Estas credenciales son solo para desarrollo local.  
-**3 Backend**  
-3.1 Instalar dependencias Desde la carpeta del repositorio:  
+**4 Backend**  
+**4.1 Instalar dependencias**  
+Desde la carpeta del repositorio:  
 `cd Backend\tura-limpia npm install`  
 Los avisos de "vulnerabilities" son normales.No ejecutes `npm audit fix.`  
-3.2 Crear el archivo .env  
+**4.2 Crear el archivo .env**  
 `Copy-Item .env.example .env`  
 Genera una clave secreta y copia el texto que salga:  
 `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
@@ -89,18 +90,34 @@ DB_NAME=tura_limpia
 JWT_SECRET=<pega aquí la clave que generaste>  
 ADMIN_CORREO=admin@turalimpia.com  
 ADMIN_CONTRASENA=Admin12345`  
-3.3 El archivo `.env` nunca se sube a GitHub y no se muestra en capturas.  
-Crear las tablas y los datos de prueba  
+ El archivo `.env` nunca se sube a GitHub y no se muestra en capturas.  
+**4.3Crear las tablas y los datos de prueba** 
 `npm run migrate  
 npm run seed`  
 `migrate` crea 12 tablas. `seed` crea el administrador y datos de prueba (5 vehículos, 5 conductores, 3 rutas, 8 barrios, 3 turnos y 2 programaciones).  
-3.4 Pruebas (opcional)  
+**4.4 Pruebas (opcional)**  
 `npm test  
 npm run test:e2e`  
 Deben pasar 21 pruebas unitarias y 7 e2e.  
-3.5 Levantar el backend  
+**4.5 Levantar el backend**  
 `npm run start:dev`  
 Está listo cuando aparecen "Conexión exitosa con PostgreSQL" y "Nest application successfully started". Deja esta ventana abierta y no hagas clic dentro de ella.  
+**5. Frontend**  
+Abre otra ventana de PowerShell (la del backend sigue corriendo) y entra a la carpeta del frontend dentro del repositorio:  
+`cd <ruta-del-repositorio>\Frontend\tura-limpia  
+npm install  
+npm start`  
+Está listo cuando aparece `Local: http://localhost:4200/` . Deja esta ventana abierta también. Los avisos de `install-scripts durante npm install` son normales.  
+**6. Entrar al sistema**   
+1. Abre **http://localhost:4200** en el navegador.
+2.  Inicia sesión con **admin@turalimpia.com / Admin12345**.
+3.  Debe entrar al dashboard.
+ El aviso "Estás viendo datos de ejemplo…" es normal: los indicadores del dashboard llegan en una entrega posterior. Lo mismo pasa con las páginas "en construcción" de Vehículos, Conductores, Rutas y Programación.
+**Verificar el acceso administrativo**
+se verifica de dos formas: en el navegador (lo que ve el usuario) y contra la API (lo que valida el backend). Las dos necesitan el backend y el frontend corriendo.
+**7.1 En el navegador**
+
+
 
 
 
