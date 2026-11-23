@@ -18,7 +18,7 @@ La solución busca facilitar la organización de los recursos operativos mediant
 | Turnos y programación | Turnos de trabajo, programación  de servicios, validación de disponibilidad y advertencia de conflictos |
 | Dashboard | Indicadores de vehiculos, conductores y rutas, y consulta de los servicios del día con filtros. |  
 
-**🛠️ Tecnologias  
+**🛠️ Tecnologias** 
 | Capa          | Tecnología  |
 |---------------|-------------|  
 | Frontend      | Angular     |  
