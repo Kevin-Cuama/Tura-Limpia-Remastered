@@ -49,6 +49,10 @@ La solución busca facilitar la organización de los recursos operativos mediant
 * Angular
 
 ## 🚀 Instalación y Ejecución  
+** 1 clonar el repositorio**  
+git clone https://github.com/Kevin-Cuama/Tura-Limpia-Remastered.git
+cd Tura-Limpia-Remastered
+git checkout acceso-administrativo
 
 ## 👥 Equipo de Desarrollo
 
