@@ -6,6 +6,10 @@ La solución busca facilitar la organización de los recursos operativos mediant
 
 ---
 
+**Acceso a la plataforma**
+Enlace:
+**Usuario de prueba** [Correo]/[Contraseña]
+
 **Funcionalidades**   
 
 | Módulo | Qué permite |
@@ -36,12 +40,13 @@ La solución busca facilitar la organización de los recursos operativos mediant
 * `Evidencias/` — Registros, capturas y soporte de pruebas/avances.
 ---
 
-##⚙️ Requisitos previos
+## ⚙️ Requisitos previos
 * Node.js
 * PostgreSQl
 * Git
 * Angular
 
+**🚀 Instalación y Ejecución**
 ## 👥 Equipo de Desarrollo
 
 | Integrante | Rol |
