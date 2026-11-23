@@ -42,17 +42,22 @@ La solución busca facilitar la organización de los recursos operativos mediant
 * `Evidencias/` — Registros, capturas y soporte de pruebas/avances.
 ---
 
-## ⚙️ Requisitos previos
-* Node.js
-* PostgreSQl 17
-* Git
-* Angular
+## ⚙️ Requisitos previos  
+|**programa** |**versión** |**descarga**|
+| Node.js|cualquier reciente|	git-scm.com|
+| PostgreSQl 17|
+| Git|
+| Angular|
 
-## 🚀 Instalación y Ejecución  
+
+Al instalar PostgreSQL: guarda la contraseña que elijas para el usuario postgres, deja el puerto en 5432 y la configuración regional por defecto, y desmarca Stack Builder en la última pantalla  
+## 🚀 Instalación y Ejecución 
 **1 clonar el repositorio**  
 git clone https://github.com/Kevin-Cuama/Tura-Limpia-Remastered.git  
 cd Tura-Limpia-Remastered  
 git checkout acceso-administrativo  
+**2 crear la base de datos**  
+
 
 
 ## 👥 Equipo de Desarrollo
