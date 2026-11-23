@@ -3,8 +3,9 @@ import { Config } from '../../../configs/configuracion.js';
 import { Sequelize } from 'sequelize-typescript';
 
 import { Administrador } from '../../administrador/models/administrador.model.js';
+import { TokenRevocado } from '../../autenticacion/models/token-revocado.model.js';
 
-export const models = [Administrador];
+export const models = [Administrador, TokenRevocado];
 
 export const TURADB = {
   provide: 'SEQUELIZE_CITAS',

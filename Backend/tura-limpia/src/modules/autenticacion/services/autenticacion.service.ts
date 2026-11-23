@@ -1,6 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcryptjs';
+import { randomUUID } from 'node:crypto';
+import { TokenRevocadoRepository } from '../repositories/token-revocado.repository.js';
 import { AdministradorRepository } from '../../administrador/repositories/administrador.repository.js';
 import {
   ERoles,
@@ -30,7 +32,8 @@ export class AutenticacionService {
 
     return {
       mensaje: 'Bienvenido administrador',
-      token: await this.jwtService.signAsync(payload),
+      // jwtid: identificador único del token, para poder cerrarlo en el logout.
+      token: await this.jwtService.signAsync(payload, { jwtid: randomUUID() }),
       administrador: {
         id: administrador.id,
         nombre: administrador.nombre,
@@ -39,7 +42,14 @@ export class AutenticacionService {
     };
   }
 
-  cerrarSesion() {
+  // RF-02: el token queda inválido aunque alguien lo haya guardado.
+  async cerrarSesion(usuario: PayloadJWT) {
+    if (usuario.jti && usuario.exp) {
+      await TokenRevocadoRepository.revocar(
+        usuario.jti,
+        new Date(usuario.exp * 1000),
+      );
+    }
     return {
       mensaje: 'Sesión cerrada correctamente.',
     };
