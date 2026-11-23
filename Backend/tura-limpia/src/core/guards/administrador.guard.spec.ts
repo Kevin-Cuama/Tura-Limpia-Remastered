@@ -5,6 +5,7 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { AdministradorGuard } from './administrador.guard.js';
 import { ERoles } from '../interfaces/payload-jwt.interface.js';
 import { MensajesError } from '../constants/mensajes-error.js';
+import { TokenRevocadoRepository } from '../../modules/autenticacion/repositories/token-revocado.repository.js';
 
 describe('AdministradorGuard', () => {
   let guard: AdministradorGuard;
@@ -54,7 +55,9 @@ describe('AdministradorGuard', () => {
       }),
     } as unknown as ExecutionContext;
 
-    vi.spyOn(jwtService, 'verifyAsync').mockRejectedValue(new Error('Token expirado'));
+    vi.spyOn(jwtService, 'verifyAsync').mockRejectedValue(
+      new Error('Token expirado'),
+    );
 
     await expect(guard.canActivate(mockContext)).rejects.toThrow(
       new UnauthorizedException(MensajesError.TOKEN_INVALIDO_O_EXPIRADO),
@@ -93,11 +96,47 @@ describe('AdministradorGuard', () => {
     const payloadAdmin = {
       idUsuario: 1,
       rol: ERoles.ADMINISTRADOR,
+      jti: 'id-del-token',
     };
     vi.spyOn(jwtService, 'verifyAsync').mockResolvedValue(payloadAdmin);
+    vi.spyOn(TokenRevocadoRepository, 'estaRevocado').mockResolvedValue(false);
 
     const resultado = await guard.canActivate(mockContext);
     expect(resultado).toBe(true);
     expect(requestObj.usuario).toEqual(payloadAdmin);
+  });
+
+  // RF-02: cierre de sesión
+  const contextoConToken = () =>
+    ({
+      switchToHttp: () => ({
+        getRequest: () => ({
+          headers: { authorization: 'Bearer token_admin' },
+        }),
+      }),
+    }) as unknown as ExecutionContext;
+
+  it('debe rechazar un token de una sesión que ya se cerró', async () => {
+    vi.spyOn(jwtService, 'verifyAsync').mockResolvedValue({
+      idUsuario: 1,
+      rol: ERoles.ADMINISTRADOR,
+      jti: 'token-cerrado',
+    });
+    vi.spyOn(TokenRevocadoRepository, 'estaRevocado').mockResolvedValue(true);
+
+    await expect(guard.canActivate(contextoConToken())).rejects.toThrow(
+      new UnauthorizedException(MensajesError.SESION_CERRADA),
+    );
+  });
+
+  it('debe rechazar un token sin identificador (no se podría cerrar)', async () => {
+    vi.spyOn(jwtService, 'verifyAsync').mockResolvedValue({
+      idUsuario: 1,
+      rol: ERoles.ADMINISTRADOR,
+    });
+
+    await expect(guard.canActivate(contextoConToken())).rejects.toThrow(
+      new UnauthorizedException(MensajesError.TOKEN_INVALIDO_O_EXPIRADO),
+    );
   });
 });

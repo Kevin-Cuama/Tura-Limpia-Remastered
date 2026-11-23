@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { AutenticacionController } from './autenticacion.controller.js';
 import { AutenticacionService } from '../services/autenticacion.service.js';
+import { JwtService } from '@nestjs/jwt';
+import { ERoles } from '../../../core/interfaces/payload-jwt.interface.js';
 
 describe('AutenticacionController', () => {
   let controller: AutenticacionController;
@@ -18,11 +20,13 @@ describe('AutenticacionController', () => {
               mensaje: 'Bienvenido administrador',
               token: 'token_prueba',
             }),
-            cerrarSesion: vi.fn().mockReturnValue({
+            cerrarSesion: vi.fn().mockResolvedValue({
               mensaje: 'Sesión cerrada correctamente.',
             }),
           },
         },
+        // El logout está protegido por AdministradorGuard, que usa JwtService.
+        { provide: JwtService, useValue: {} },
       ],
     }).compile();
 
@@ -46,11 +50,16 @@ describe('AutenticacionController', () => {
     });
   });
 
-  it('debe llamar a cerrarSesion y devolver la respuesta de confirmación', () => {
+  it('debe llamar a cerrarSesion y devolver la respuesta de confirmación', async () => {
     const cerrarSpy = vi.spyOn(service, 'cerrarSesion');
-    const resultado = controller.cerrarSesion();
+    const usuario = {
+      idUsuario: 1,
+      rol: ERoles.ADMINISTRADOR,
+      jti: 'id-del-token',
+    };
+    const resultado = await controller.cerrarSesion({ usuario } as any);
 
-    expect(cerrarSpy).toHaveBeenCalled();
+    expect(cerrarSpy).toHaveBeenCalledWith(usuario);
     expect(resultado).toEqual({
       mensaje: 'Sesión cerrada correctamente.',
     });

@@ -1,126 +1,188 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Tura Limpia — Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST del panel administrativo de Tura Limpia.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+**Tecnologías:** NestJS 12 · TypeScript · Sequelize 6 · PostgreSQL · JWT · bcrypt · Vitest
 
-## Description
+## Requisitos
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- Node.js 22 o superior
+- PostgreSQL 14 o superior, con una base de datos vacía creada (por ejemplo `tura_limpia`)
 
-## Project setup
+## Instalación
+
+Todos los comandos se ejecutan dentro de la carpeta `Backend/tura-limpia`.
 
 ```bash
-$ npm install
+npm install
 ```
-
-## Compile and run the project
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+cp .env.example .env
 ```
 
-## Run tests
+Abra `.env` y complete los datos de su PostgreSQL y del administrador inicial.
+
+### Variables de entorno
+
+| Variable | Descripción | Ejemplo |
+| :--- | :--- | :--- |
+| `PORT` | Puerto del backend | `3000` |
+| `CORS_ORIGENES` | Direcciones del frontend que pueden llamar a la API, separadas por coma. Vacío = cualquiera (solo para desarrollo) | `http://localhost:5173` |
+| `DB_HOST` | Servidor de PostgreSQL | `localhost` |
+| `DB_PORT` | Puerto de PostgreSQL | `5432` |
+| `DB_USER` | Usuario de PostgreSQL | `postgres` |
+| `DB_PASS` | Contraseña de PostgreSQL | |
+| `DB_NAME` | Nombre de la base de datos | `tura_limpia` |
+| `JWT_SECRET` | Secreto para firmar los tokens de sesión | texto largo y aleatorio |
+| `JWT_EXPIRES_IN` | Duración de la sesión | `8h` |
+| `BCRYPT_SALTOS` | Costo del hash de contraseñas | `10` |
+| `ADMIN_NOMBRE` | Nombre del administrador inicial | `Administrador` |
+| `ADMIN_CORREO` | Correo del administrador inicial | `admin@turalimpia.com` |
+| `ADMIN_CONTRASENA` | Contraseña del administrador inicial | |
+
+## Crear la base de datos desde cero
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm run migrate
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Crea todas las tablas del modelo entidad-relación: `administrador`, `vehiculo`, `conductor`, `barrio`, `ruta`, `ruta_barrio`, `punto_ruta`, `turno`, `programacion` y `programacion_dia`, con sus llaves y restricciones. También crea `token_revocado`, una tabla técnica donde se guardan los tokens de las sesiones cerradas.
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm run seed
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Crea el **administrador inicial** con los datos de `ADMIN_CORREO` y `ADMIN_CONTRASENA`, y carga los **datos mínimos de prueba**. Se puede ejecutar varias veces sin duplicar registros.
 
-## Observability
+| Datos de prueba | Contenido |
+| :--- | :--- |
+| Vehículos | 5 (placas `TLA101` a `TLA105`): 2 disponibles, 1 en servicio, 1 en mantenimiento, 1 desactivado |
+| Conductores | 5: 4 activos (uno con la licencia vencida) y 1 inactivo |
+| Barrios | 8 barrios de Buenaventura |
+| Turnos | Mañana (06:00–14:00), Tarde (14:00–22:00), Madrugada (00:00–06:00) |
+| Rutas | 2 activas con recorrido trazado y 1 suspendida sin recorrido |
+| Programaciones | 2 activas que empiezan el día en que se cargan |
 
-In production applications, observability is essential for understanding how your system behaves, detecting issues early, and maintaining reliable performance.
-
-[NestJS Observe](https://observe.nestjs.com) automatically instruments your NestJS application, giving you deep visibility into your system with minimal setup:
-
-- **Distributed tracing:** Follow requests across services and understand how they flow through your system.
-- **Waterfall analysis:** Visualize request execution and identify slow operations, bottlenecks, and unexpected delays.
-- **Performance analysis:** Analyze application performance in real time and quickly pinpoint areas that need optimization.
-- **Metrics:** Track key application and infrastructure metrics to understand system health and performance trends.
-- **Logging:** Centralize and correlate logs with traces and other telemetry to make debugging easier.
-- **Error tracking:** Detect errors quickly and investigate their root causes with the surrounding context.
-- **SLA monitoring:** Track service-level objectives and identify when your application is approaching or exceeding defined thresholds.
-- **Alarms and alerts:** Set up alerts for critical errors, performance degradation, SLA violations, and other anomalies so your team can react quickly.
-
-This project is already instrumented. To connect it, run this and approve the code it prints at [observe.nestjs.com/link](https://observe.nestjs.com/link) - signing up for free if you have no account:
+Para volver a empezar con la base de datos vacía:
 
 ```bash
-$ npx @nestjs/observe link
+npm run migrate:undo:all
 ```
 
-It writes the app key and secret into `.env` and makes every `nest start` script (`start`, `start:dev`, `start:debug`) load it. In production, set `OBSERVE_APP_KEY` and `OBSERVE_APP_SECRET` in the environment instead.
+## Ejecutar
 
-Or do it by hand: create an application and an API key at [observe.nestjs.com](https://observe.nestjs.com), and set the pair as `OBSERVE_APP_KEY` and `OBSERVE_APP_SECRET` in the environment the app runs in.
+```bash
+npm run start:dev
+```
 
-The free plan needs no payment details and covers 300,000 events a month. You can also browse the [live demo](https://www.observe-demo.nestjs.com/dashboard) first - the whole dashboard over a busy service's data, with nothing to install.
+El backend queda disponible en `http://localhost:3000`.
 
-## Resources
+## Verificar el acceso administrativo
 
-Check out a few resources that may come in handy when working with NestJS:
+Los ejemplos usan `curl`; también se pueden hacer desde Postman o Insomnia. Reemplace el correo y la contraseña por los de su `.env`.
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Auto-instrument your application with [NestJS Observe](https://observe.nestjs.com). Distributed tracing, metrics, and logging made easy. Error tracking and performance monitoring for your NestJS applications.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+**1. Iniciar sesión con credenciales correctas** → `200` con el token
 
-## Support
+```bash
+curl -X POST http://localhost:3000/api/v1/login -H "Content-Type: application/json" -d '{"correo":"admin@turalimpia.com","contrasena":"SU_CONTRASENA"}'
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```json
+{
+  "mensaje": "Bienvenido administrador",
+  "token": "eyJhbGciOi...",
+  "administrador": { "id": 1, "nombre": "Administrador", "correo": "admin@turalimpia.com" }
+}
+```
 
-## Stay in touch
+**2. Credenciales incorrectas** → `401` con un mensaje comprensible
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```bash
+curl -X POST http://localhost:3000/api/v1/login -H "Content-Type: application/json" -d '{"correo":"admin@turalimpia.com","contrasena":"incorrecta"}'
+```
 
-## License
+```json
+{ "message": "Correo o contraseña incorrectos.", "error": "Unauthorized", "statusCode": 401 }
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+**3. Ruta protegida sin token** → `401`
+
+```bash
+curl http://localhost:3000/api/v1/administrador/perfil
+```
+
+```json
+{ "message": "Token no proporcionado.", "error": "Unauthorized", "statusCode": 401 }
+```
+
+**4. Ruta protegida con un token falso o vencido** → `401`
+
+```bash
+curl http://localhost:3000/api/v1/administrador/perfil -H "Authorization: Bearer token_falso"
+```
+
+```json
+{ "message": "Token inválido o expirado.", "error": "Unauthorized", "statusCode": 401 }
+```
+
+**5. Ruta protegida con el token del paso 1** → `200`
+
+```bash
+curl http://localhost:3000/api/v1/administrador/perfil -H "Authorization: Bearer EL_TOKEN_DEL_PASO_1"
+```
+
+**6. Cerrar sesión con el token del paso 1** → `200`
+
+```bash
+curl -X POST http://localhost:3000/api/v1/logout -H "Authorization: Bearer EL_TOKEN_DEL_PASO_1"
+```
+
+```json
+{ "mensaje": "Sesión cerrada correctamente." }
+```
+
+**7. Usar el mismo token después de cerrar sesión** → `401`
+
+```bash
+curl http://localhost:3000/api/v1/administrador/perfil -H "Authorization: Bearer EL_TOKEN_DEL_PASO_1"
+```
+
+```json
+{ "message": "La sesión fue cerrada. Inicie sesión de nuevo.", "error": "Unauthorized", "statusCode": 401 }
+```
+
+El token cerrado queda inválido aunque alguien lo haya guardado. Para volver a entrar hay que iniciar sesión de nuevo.
+
+## Pruebas
+
+Pruebas unitarias (no necesitan base de datos):
+
+```bash
+npm test
+```
+
+Pruebas de punta a punta del acceso administrativo: login, credenciales incorrectas, rutas protegidas, cierre de sesión y CORS. Usan la base de datos del `.env`, así que primero hay que crearla y cargar el administrador:
+
+```bash
+npm run migrate
+```
+
+```bash
+npm run seed
+```
+
+```bash
+npm run test:e2e
+```
+
+## Estructura
+
+```
+src/
+├── configs/       Configuración leída del .env
+├── core/          Guard de administrador, constantes de errores y utilidades compartidas
+├── migrations/    Migraciones de la base de datos
+├── seeders/       Administrador inicial y datos de prueba
+└── modules/       Un módulo por funcionalidad (controller, service, dtos, interfaces, models, repositories)
+```
