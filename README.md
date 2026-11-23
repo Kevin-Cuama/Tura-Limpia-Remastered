@@ -48,16 +48,28 @@ La solución busca facilitar la organización de los recursos operativos mediant
 | Node.js      |22 o superior (LTS)     |nodejs.org|  
 | PostgreSQl 17|16 (sirve 15 o superior)|postgresql.org/download/windows|
 | Git          |cualquiera reciente     |git-scm.com|
-| Postman      |cualquiera(opcional     | postman.com/downloads  |
-
+| Postman      |cualquiera(opcional     | postman.com/downloads  |  
 
 Al instalar PostgreSQL: guarda la contraseña que elijas para el usuario postgres, deja el puerto en 5432 y la configuración regional por defecto, y desmarca Stack Builder en la última pantalla  
+Para comprobar que quedaron instalados, abre PowerShell y ejecuta:  
+git --version
+node -v  
+
+
 ## 🚀 Instalación y Ejecución 
 **1 clonar el repositorio**  
 git clone https://github.com/Kevin-Cuama/Tura-Limpia-Remastered.git  
 cd Tura-Limpia-Remastered  
 git checkout acceso-administrativo  
 **2 crear la base de datos**  
+Abrir la consola de PostgreSQL (pide la contraseña de postgres; no se ve mientras se escribe):  
+& 'C:\Program Files\PostgreSQL\16\bin\psql.exe' -U postgres -h localhost  
+Cuando aparezca postgres=#, escribir una por una:  
+CREATE USER tura WITH PASSWORD 'tura';
+CREATE DATABASE tura_limpia OWNER tura;
+\q  
+Debe responder CREATE ROLE y CREATE DATABASE. Si dice que ya existen, se continúa. Estas credenciales son solo para desarrollo local.  
+
 
 
 
