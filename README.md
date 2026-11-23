@@ -114,8 +114,9 @@ Está listo cuando aparece `Local: http://localhost:4200/` . Deja esta ventana a
 3.  Debe entrar al dashboard.
  El aviso "Estás viendo datos de ejemplo…" es normal: los indicadores del dashboard llegan en una entrega posterior. Lo mismo pasa con las páginas "en construcción" de Vehículos, Conductores, Rutas y Programación.
 **7. Verificar el acceso administrativo**
-se verifica de dos formas: en el navegador (lo que ve el usuario) y contra la API (lo que valida el backend). Las dos necesitan el backend y el frontend corriendo.
-**7.1 En el navegador**
+    se verifica de dos formas: en el navegador (lo que ve el usuario) y contra la API (lo que valida el backend). Las dos necesitan el backend y el frontend corriendo.
+    **7.1 En el navegador**
+    
 
 
 ## 👥 Equipo de Desarrollo
