@@ -8,7 +8,7 @@ La solución busca facilitar la organización de los recursos operativos mediant
 
 **Acceso a la plataforma**  
 
-**Enlace:**  
+**Enlace: https://github.com/Kevin-Cuama/Tura-Limpia-Remastered**  
 
 **Usuario de prueba** [Correo]/[Contraseña]
 
