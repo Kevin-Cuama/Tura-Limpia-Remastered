@@ -44,7 +44,7 @@ La solución busca facilitar la organización de los recursos operativos mediant
 
 ## ⚙️ Requisitos previos
 * Node.js
-* PostgreSQl
+* PostgreSQl 17
 * Git
 * Angular
 
