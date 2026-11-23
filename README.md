@@ -44,6 +44,7 @@ La solución busca facilitar la organización de los recursos operativos mediant
 
 ## ⚙️ Requisitos previos  
 |**programa** |**versión** |**descarga**|
+|--------|-------------| 
 | Node.js|cualquier reciente|	git-scm.com|
 | PostgreSQl 17|
 | Git|
