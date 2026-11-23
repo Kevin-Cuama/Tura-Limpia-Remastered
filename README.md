@@ -12,7 +12,7 @@ La solución busca facilitar la organización de los recursos operativos mediant
 
 **Usuario de prueba** [Correo]/[Contraseña]
 
-**Funcionalidades**   
+## ✨Funcionalidades  
 
 | Módulo | Qué permite |
 |--------|-------------|  
