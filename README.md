@@ -140,7 +140,7 @@ $r = Invoke-RestMethod -Method Post -Uri http://localhost:3000/api/v1/login -
 ContentType 'application/json' -Body  
 '{"correo":"admin@turalimpia.com","contrasena":"Admin12345"}'  
 $r.mensaje  
-$h = @{ Authorization = "Bearer $($r.token)" }  
+$h = @{ Authorization ="Bearer $($r.token)" }  
 
 Ruta protegida sin token → 401 "Token no proporcionado.":  
 'Invoke-RestMethod -Uri http://localhost:3000/api/v1/administrador/perfil'  
