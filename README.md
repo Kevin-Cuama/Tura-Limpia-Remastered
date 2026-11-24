@@ -28,17 +28,17 @@ La solución busca facilitar la organización de los recursos operativos mediant
 
 | Capa          | Tecnología  |
 |---------------|-------------|  
-| Frontend      | Angular     |  
-| Backend       | Nest.js     |  
-| Base de datos | PostgreSQL  |
-| Control de versiones | Git, GitHub|
+| Frontend      | Angular 22, TypeScript |  
+| Backend       | NestJS 12, TypeScript, Sequelize 6, JWT, bcrypt, Vitest |  
+| Base de datos | PostgreSQL 16 |
+| Control de versiones | Git, GitHub (ramas y pull requests) |
 
 
 ## 📂 Estructura del Repositorio
 
 * `Backend/` — Lógica del servidor, APIs y servicios.
-* `Base de datos/` — Scripts, modelos y configuración de la base de datos.
-* `Documentación/` — Manuales, diagramas y documentación técnica del proyecto.
+* `Database/` — Explicación de cómo se crea la base de datos (migraciones y datos de prueba).
+* `Docs/` — Manuales, diagramas, documentación técnica y colección de Postman.
 * `Frontend/` — Interfaz de usuario y componentes web.
 * `Evidencias/` — Registros, capturas y soporte de pruebas/avances.
 ---
@@ -48,9 +48,9 @@ La solución busca facilitar la organización de los recursos operativos mediant
 |programa |versión |descarga| 
 |---------|--------|--------|  
 | Node.js      |22 o superior (LTS)     |nodejs.org|  
-| PostgreSQl 17|16 (sirve 15 o superior)|postgresql.org/download/windows|
+| PostgreSQL   |16 (sirve 15 o superior)|postgresql.org/download/windows|
 | Git          |cualquiera reciente     |git-scm.com|
-| Postman      |cualquiera(opcional     | postman.com/downloads  |  
+| Postman      |cualquiera (opcional)   | postman.com/downloads  |  
 
 Al instalar PostgreSQL: guarda la contraseña que elijas para el usuario postgres, deja el puerto en 5432 y la configuración regional por defecto, y desmarca Stack Builder en la última pantalla  
 Para comprobar que quedaron instalados, abre PowerShell y ejecuta:  
@@ -64,8 +64,8 @@ node -v
 En PowerShell, desde la carpeta donde quieras guardar el proyecto:  
 `git clone https://github.com/Kevin-Cuama/Tura-Limpia-Remastered.git  
 cd Tura-Limpia-Remastered`  
-Cambia a la rama de la entrega 1. Mientras el PR #10 no esté fusionado:  
-`git checkout acceso-administrativo`
+La rama principal (`Produccion`) ya contiene la entrega 1 completa; no hace falta cambiar de rama.  
+
   
 **3 crear la base de datos**  
 
@@ -82,7 +82,8 @@ Debe responder `CREATE ROLE` y `CREATE DATABASE`. Si dice que ya existen, se con
 **4.1 Instalar dependencias** 
 
 Desde la carpeta del repositorio:  
-`cd Backend\tura-limpia npm install`  
+`cd Backend\tura-limpia`  
+`npm install`  
 Los avisos de "vulnerabilities" son normales.No ejecutes `npm audit fix.`  
 
 **4.2 Crear el archivo .env**  
@@ -151,32 +152,36 @@ Está listo cuando aparece `Local: http://localhost:4200/` . Deja esta ventana a
 **7.2 Contra la API, con PowerShell**  
 
 Abre una tercera ventana de PowerShell y ejecuta los bloques en orden. En los casos que deben fallar, PowerShell muestra el mensaje en rojo; eso es lo esperado. Credenciales incorrectas → 401 "Correo o contraseña incorrectos.":  
-`Invoke-RestMethod -Method Post -Uri http://localhost:3000/api/v1/login ContentType 'application/json' -Body '{"correo":"admin@turalimpia.com","contrasena":"incorrecta"}'`  
+`Invoke-RestMethod -Method Post -Uri http://localhost:3000/api/v1/login -ContentType 'application/json' -Body '{"correo":"admin@turalimpia.com","contrasena":"incorrecta"}'`  
 
 Credenciales correctas → "Bienvenido administrador", con token. El token queda guardado en '$h' para los pasos siguientes:   
-```$r = Invoke-RestMethod -Method Post -Uri http://localhost:3000/api/v1/login ContentType 'application/json' -Body '{"correo":"admin@turalimpia.com","contrasena":"Admin12345"}' $r.mensaje $h = @{ Authorization = "Bearer $($r.token)" } ``` 
+```powershell
+$r = Invoke-RestMethod -Method Post -Uri http://localhost:3000/api/v1/login -ContentType 'application/json' -Body '{"correo":"admin@turalimpia.com","contrasena":"Admin12345"}'
+$r.mensaje
+$h = @{ Authorization = "Bearer $($r.token)" }
+```
 
 Ruta protegida sin token → 401 "Token no proporcionado.":  
-'Invoke-RestMethod -Uri http://localhost:3000/api/v1/administrador/perfil'  
+`Invoke-RestMethod -Uri http://localhost:3000/api/v1/administrador/perfil`  
 
 Ruta protegida con un token falso → 401 "Token inválido o expirado.":  
-'Invoke-RestMethod -Uri http://localhost:3000/api/v1/administrador/perfil Headers @{ Authorization = 'Bearer token_falso' }' 
+`Invoke-RestMethod -Uri http://localhost:3000/api/v1/administrador/perfil -Headers @{ Authorization = 'Bearer token_falso' }`  
 
 Ruta protegida con el token válido → solo id, nombre y correo:  
-'Invoke-RestMethod -Uri http://localhost:3000/api/v1/administrador/perfil Headers $h' 
+`Invoke-RestMethod -Uri http://localhost:3000/api/v1/administrador/perfil -Headers $h`  
 
 Cerrar sesión → "Sesión cerrada correctamente.":  
-'Invoke-RestMethod -Method Post -Uri http://localhost:3000/api/v1/logout Headers $h'  
+`Invoke-RestMethod -Method Post -Uri http://localhost:3000/api/v1/logout -Headers $h`  
 
 El mismo token después de cerrar sesión → 401 "La sesión fue cerrada. Inicie sesión de nuevo.":  
-'Invoke-RestMethod -Uri http://localhost:3000/api/v1/administrador/perfil Headers $h'  
+`Invoke-RestMethod -Uri http://localhost:3000/api/v1/administrador/perfil -Headers $h`  
 
 **7.3 Con Postman (alternativa)**  
 
-1 Importar 'Tura-Limpia-API.postman_collection.json.'  
+1. Importar `Docs/Postman/Tura-Limpia-API.postman_collection.json`.  
 2. En las variables de la colección, poner 'contrasena' = 'Admin12345' y guardar. 'correo' ya viene como admin@turalimpia.com.  
 3. Ejecutar solo las carpetas "1. Autenticación" y "9. Cierre de sesión". Las carpetas 2 a 8 son de entregas siguientes y responden 404.  
-Los mismos casos, con 'curl' para Linux o Mac, están en 'Backend/turalimpia/README.md' , sección "Verificar el acceso administrativo".
+Los mismos casos, con `curl` para Linux o Mac, están en `Backend/tura-limpia/README.md`, sección "Verificar el acceso administrativo".
 
 **8. Problemas comunes**  
 

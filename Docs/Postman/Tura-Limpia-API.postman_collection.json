@@ -1,0 +1,1942 @@
+{
+  "info": {
+    "_postman_id": "c6de0bdf-7573-4dad-b9e5-0500a90d73e3",
+    "name": "Tura Limpia API",
+    "description": "Todos los endpoints del backend de Tura Limpia.\n\n**Cómo usarla**\n1. Importe este archivo en Postman (Import → archivo).\n2. En la colección → Variables, revise `baseUrl`, `correo` y `contrasena` (los del administrador de su .env).\n3. Ejecute **Autenticación → Iniciar sesión**: el token se guarda solo y las demás peticiones lo usan.\n4. Ejecute las peticiones en orden, o toda la colección con *Run collection*: los ids de lo que se crea se guardan solos.\n\nLos datos (placa, documento, nombres) se generan al azar en cada ejecución, así que se puede correr varias veces.\nLa carpeta **Cierre de sesión** va al final porque invalida el token.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Datos únicos en cada ejecución, para no chocar con registros repetidos",
+          "const n = () => Math.floor(Math.random() * 900 + 100);",
+          "const letras = () => Array.from({length: 3}, () => 'ABCDEFGHJKLMNPRSTUVWXYZ'[Math.floor(Math.random() * 23)]).join('');",
+          "if (!pm.collectionVariables.get('sufijo') || pm.info.requestName === 'Iniciar sesión') {",
+          "  pm.collectionVariables.set('sufijo', String(Date.now()).slice(-6));",
+          "  pm.collectionVariables.set('placa', letras() + n());",
+          "  pm.collectionVariables.set('documento', '9' + String(Date.now()).slice(-9));",
+          "  const f = new Date(Date.now() + 7 * 864e5);",
+          "  pm.collectionVariables.set('fechaProgramacion', f.toISOString().slice(0, 10));",
+          "  pm.collectionVariables.set('fechaHoy', new Date(Date.now() - 5 * 36e5).toISOString().slice(0, 10));",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api/v1"
+    },
+    {
+      "key": "correo",
+      "value": "admin@turalimpia.com"
+    },
+    {
+      "key": "contrasena",
+      "value": "cambie_esta_contrasena"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "tokenCerrado",
+      "value": ""
+    },
+    {
+      "key": "sufijo",
+      "value": ""
+    },
+    {
+      "key": "placa",
+      "value": ""
+    },
+    {
+      "key": "documento",
+      "value": ""
+    },
+    {
+      "key": "fechaProgramacion",
+      "value": ""
+    },
+    {
+      "key": "fechaHoy",
+      "value": ""
+    },
+    {
+      "key": "idVehiculo",
+      "value": ""
+    },
+    {
+      "key": "idConductor",
+      "value": ""
+    },
+    {
+      "key": "idBarrio",
+      "value": ""
+    },
+    {
+      "key": "idRuta",
+      "value": ""
+    },
+    {
+      "key": "idTurno",
+      "value": ""
+    },
+    {
+      "key": "idProgramacion",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Autenticación",
+      "description": "RF-01 a RF-03. Empiece aquí.",
+      "item": [
+        {
+          "name": "Iniciar sesión",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "description": "RF-01. Guarda el token en la variable {{token}}; las demás peticiones lo usan solas.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{correo}}\",\n  \"contrasena\": \"{{contrasena}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "const r = pm.response.json();",
+                  "if (r.token) pm.collectionVariables.set('token', r.token);",
+                  "pm.test('Devuelve un token', () => pm.expect(r.token).to.be.a('string'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Iniciar sesión con contraseña incorrecta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "description": "RF-01. Debe responder 401 con un mensaje claro.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{correo}}\",\n  \"contrasena\": \"incorrecta\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Mensaje comprensible', () => pm.expect(pm.response.json().message).to.eql('Correo o contraseña incorrectos.'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ver perfil del administrador",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/administrador/perfil",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "administrador",
+                "perfil"
+              ]
+            },
+            "description": "RF-03. Ruta protegida: necesita el token."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Solo id, nombre y correo', () => pm.expect(Object.keys(pm.response.json()).sort()).to.eql(['correo','id','nombre']));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ver perfil sin token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/administrador/perfil",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "administrador",
+                "perfil"
+              ]
+            },
+            "description": "RF-03. Sin token debe responder 401.",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Vehículos",
+      "description": "RF-05 y RF-06.",
+      "item": [
+        {
+          "name": "Listar vehículos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vehiculos?paginaActual=1&paginasRegistro=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vehiculos"
+              ],
+              "query": [
+                {
+                  "key": "paginaActual",
+                  "value": "1"
+                },
+                {
+                  "key": "paginasRegistro",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "RF-05. Filtros opcionales: buscar, estadoOperativo (DISPONIBLE, EN_SERVICIO, MANTENIMIENTO, FUERA_DE_SERVICIO), activo (true/false)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar vehículo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/vehiculos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vehiculos"
+              ]
+            },
+            "description": "RF-05. La placa no se puede repetir. Guarda el id en {{idVehiculo}}.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"placa\": \"{{placa}}\",\n  \"marca\": \"Chevrolet\",\n  \"modelo\": \"NPR\",\n  \"capacidad\": 8\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code < 300) pm.collectionVariables.set('idVehiculo', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar vehículo con placa repetida",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/vehiculos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vehiculos"
+              ]
+            },
+            "description": "RF-05. Debe responder 409.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"placa\": \"{{placa}}\",\n  \"marca\": \"Ford\",\n  \"modelo\": \"F\",\n  \"capacidad\": 5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 409', () => pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Consultar vehículo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vehiculos/{{idVehiculo}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vehiculos",
+                "{{idVehiculo}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Editar vehículo",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/vehiculos/{{idVehiculo}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vehiculos",
+                "{{idVehiculo}}"
+              ]
+            },
+            "description": "Campos editables: placa, marca, modelo, capacidad.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"capacidad\": 10,\n  \"modelo\": \"NQR\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cambiar estado operativo",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/vehiculos/{{idVehiculo}}/estado",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vehiculos",
+                "{{idVehiculo}}",
+                "estado"
+              ]
+            },
+            "description": "RF-06. Valores: DISPONIBLE, EN_SERVICIO, MANTENIMIENTO, FUERA_DE_SERVICIO.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estadoOperativo\": \"EN_SERVICIO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Desactivar vehículo",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vehiculos/{{idVehiculo}}/desactivar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vehiculos",
+                "{{idVehiculo}}",
+                "desactivar"
+              ]
+            },
+            "description": "RF-05. No se borra: queda activo = false."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Activar vehículo",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vehiculos/{{idVehiculo}}/activar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vehiculos",
+                "{{idVehiculo}}",
+                "activar"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Conductores",
+      "description": "RF-07 y RF-08.",
+      "item": [
+        {
+          "name": "Listar conductores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/conductores?paginaActual=1&paginasRegistro=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "conductores"
+              ],
+              "query": [
+                {
+                  "key": "paginaActual",
+                  "value": "1"
+                },
+                {
+                  "key": "paginasRegistro",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "RF-07. Filtros opcionales: buscar (nombre, documento o licencia, sin importar tildes), estado (ACTIVO/INACTIVO), categoriaLicencia."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar conductor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/conductores",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "conductores"
+              ]
+            },
+            "description": "RF-07 y RF-08. Documento y licencia únicos. Categorías: A1, A2, B1, B2, B3, C1, C2, C3. Fecha AAAA-MM-DD.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombres\": \"Pedro Pablo\",\n  \"apellidos\": \"Sinisterra\",\n  \"numeroDocumento\": \"{{documento}}\",\n  \"numeroLicencia\": \"{{documento}}\",\n  \"categoriaLicencia\": \"C2\",\n  \"vencimientoLicencia\": \"2030-05-01\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code < 300) pm.collectionVariables.set('idConductor', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Consultar conductor",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/conductores/{{idConductor}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "conductores",
+                "{{idConductor}}"
+              ]
+            },
+            "description": "Incluye licenciaVigente (calculado)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Editar conductor",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/conductores/{{idConductor}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "conductores",
+                "{{idConductor}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vencimientoLicencia\": \"2031-12-31\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Desactivar conductor",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/conductores/{{idConductor}}/desactivar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "conductores",
+                "{{idConductor}}",
+                "desactivar"
+              ]
+            },
+            "description": "RF-08. Estado INACTIVO."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Activar conductor",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/conductores/{{idConductor}}/activar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "conductores",
+                "{{idConductor}}",
+                "activar"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. Barrios",
+      "description": "RF-09.",
+      "item": [
+        {
+          "name": "Listar barrios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/barrios?paginaActual=1&paginasRegistro=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "barrios"
+              ],
+              "query": [
+                {
+                  "key": "paginaActual",
+                  "value": "1"
+                },
+                {
+                  "key": "paginasRegistro",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "RF-09. Filtro opcional: buscar."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar barrio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/barrios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "barrios"
+              ]
+            },
+            "description": "RF-09. El nombre no se repite, sin importar mayúsculas.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Barrio Prueba {{sufijo}}\",\n  \"descripcion\": \"Sector de prueba\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code < 300) pm.collectionVariables.set('idBarrio', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Consultar barrio",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/barrios/{{idBarrio}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "barrios",
+                "{{idBarrio}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Editar barrio",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/barrios/{{idBarrio}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "barrios",
+                "{{idBarrio}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Sector de prueba editado\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "5. Rutas",
+      "description": "RF-10 a RF-13. Usa el barrio creado en la carpeta 4.",
+      "item": [
+        {
+          "name": "Listar rutas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rutas?paginaActual=1&paginasRegistro=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rutas"
+              ],
+              "query": [
+                {
+                  "key": "paginaActual",
+                  "value": "1"
+                },
+                {
+                  "key": "paginasRegistro",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "RF-10. Filtros opcionales: buscar, estado (ACTIVA/SUSPENDIDA), tipoServicio, idBarrio."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear ruta con barrios y recorrido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/rutas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rutas"
+              ]
+            },
+            "description": "RF-10 a RF-13. barrios y puntos son opcionales. El orden de los puntos es el orden del recorrido (mínimo 2).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Ruta Prueba {{sufijo}}\",\n  \"descripcion\": \"Ruta creada desde Postman\",\n  \"tipoServicio\": \"Recolección domiciliaria\",\n  \"barrios\": [\n    \"{{idBarrio}}\"\n  ],\n  \"puntos\": [\n    {\n      \"latitud\": 3.8801,\n      \"longitud\": -77.0312,\n      \"referencia\": \"Inicio\"\n    },\n    {\n      \"latitud\": 3.8815,\n      \"longitud\": -77.029\n    },\n    {\n      \"latitud\": 3.883,\n      \"longitud\": -77.027,\n      \"referencia\": \"Fin\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Postman envía las variables como texto: el id del barrio va como número",
+                  "const body = JSON.parse(pm.request.body.raw.replace('\"{{idBarrio}}\"', pm.collectionVariables.get('idBarrio')));",
+                  "pm.request.body.raw = JSON.stringify(body, null, 2);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code < 300) pm.collectionVariables.set('idRuta', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Consultar ruta",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rutas/{{idRuta}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rutas",
+                "{{idRuta}}"
+              ]
+            },
+            "description": "RF-13. Incluye barrios y puntos en orden, para el mapa."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Editar ruta",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/rutas/{{idRuta}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rutas",
+                "{{idRuta}}"
+              ]
+            },
+            "description": "Campos editables: nombre, descripcion, tipoServicio.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Ruta editada desde Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Suspender ruta",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rutas/{{idRuta}}/suspender",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rutas",
+                "{{idRuta}}",
+                "suspender"
+              ]
+            },
+            "description": "RF-11. Conserva barrios y recorrido."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Activar ruta",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rutas/{{idRuta}}/activar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rutas",
+                "{{idRuta}}",
+                "activar"
+              ]
+            },
+            "description": "RF-11."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Asignar barrios",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/rutas/{{idRuta}}/barrios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rutas",
+                "{{idRuta}}",
+                "barrios"
+              ]
+            },
+            "description": "Reemplaza la lista completa de barrios (ids).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"barrios\": [\n    1,\n    2\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Consultar recorrido",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rutas/{{idRuta}}/recorrido",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rutas",
+                "{{idRuta}}",
+                "recorrido"
+              ]
+            },
+            "description": "RF-13. Solo los puntos, para dibujar el mapa."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Guardar recorrido",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/rutas/{{idRuta}}/recorrido",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rutas",
+                "{{idRuta}}",
+                "recorrido"
+              ]
+            },
+            "description": "RF-12 y RF-13. Reemplaza el recorrido completo (mínimo 2 puntos).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"puntos\": [\n    {\n      \"latitud\": 3.883,\n      \"longitud\": -77.027,\n      \"referencia\": \"Fin\"\n    },\n    {\n      \"latitud\": 3.8815,\n      \"longitud\": -77.029\n    },\n    {\n      \"latitud\": 3.8801,\n      \"longitud\": -77.0312,\n      \"referencia\": \"Inicio\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "6. Turnos",
+      "description": "RF-14.",
+      "item": [
+        {
+          "name": "Listar turnos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/turnos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turnos"
+              ]
+            },
+            "description": "RF-14."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear turno",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/turnos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turnos"
+              ]
+            },
+            "description": "RF-14. Horas HH:mm; la hora de fin debe ser posterior a la de inicio.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Turno Prueba {{sufijo}}\",\n  \"horaInicio\": \"15:00\",\n  \"horaFin\": \"23:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code < 300) pm.collectionVariables.set('idTurno', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear turno con horario inválido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/turnos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turnos"
+              ]
+            },
+            "description": "RF-14. Debe responder 400.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Noche {{sufijo}}\",\n  \"horaInicio\": \"22:00\",\n  \"horaFin\": \"06:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Consultar turno",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/turnos/{{idTurno}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turnos",
+                "{{idTurno}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Editar turno",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/turnos/{{idTurno}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turnos",
+                "{{idTurno}}"
+              ]
+            },
+            "description": "No deja cambiar las horas si el turno tiene programaciones activas.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Turno Prueba {{sufijo}} editado\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "7. Programación",
+      "description": "RF-15 a RF-18. Usa lo creado en las carpetas 2, 3, 5 y 6.",
+      "item": [
+        {
+          "name": "Listar programaciones",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/programaciones?paginaActual=1&paginasRegistro=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "programaciones"
+              ],
+              "query": [
+                {
+                  "key": "paginaActual",
+                  "value": "1"
+                },
+                {
+                  "key": "paginasRegistro",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Filtros opcionales: idRuta, idVehiculo, idConductor, idTurno, estado, dia."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Programar ruta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/programaciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "programaciones"
+              ]
+            },
+            "description": "RF-15, RF-17 y RF-18. fecha = inicio (AAAA-MM-DD, hoy o después); dias se repiten cada semana. Responde 409 si un recurso no está disponible o hay cruce de horario.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idRuta\": \"{{idRuta}}\",\n  \"idVehiculo\": \"{{idVehiculo}}\",\n  \"idConductor\": \"{{idConductor}}\",\n  \"idTurno\": \"{{idTurno}}\",\n  \"fecha\": \"{{fechaProgramacion}}\",\n  \"dias\": [\n    \"LUNES\",\n    \"MIERCOLES\",\n    \"VIERNES\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Postman envía las variables como texto: los ids van como números",
+                  "let raw = pm.request.body.raw;",
+                  "for (const v of ['idRuta', 'idVehiculo', 'idConductor', 'idTurno']) raw = raw.replace('\"{{' + v + '}}\"', pm.collectionVariables.get(v));",
+                  "pm.request.body.raw = raw;"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code < 300) pm.collectionVariables.set('idProgramacion', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Programar con cruce de horario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/programaciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "programaciones"
+              ]
+            },
+            "description": "RF-18. Mismo vehículo y conductor, mismo turno y día: debe responder 409 con los conflictos.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idRuta\": \"{{idRuta}}\",\n  \"idVehiculo\": \"{{idVehiculo}}\",\n  \"idConductor\": \"{{idConductor}}\",\n  \"idTurno\": \"{{idTurno}}\",\n  \"fecha\": \"{{fechaProgramacion}}\",\n  \"dias\": [\n    \"LUNES\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Postman envía las variables como texto: los ids van como números",
+                  "let raw = pm.request.body.raw;",
+                  "for (const v of ['idRuta', 'idVehiculo', 'idConductor', 'idTurno']) raw = raw.replace('\"{{' + v + '}}\"', pm.collectionVariables.get(v));",
+                  "pm.request.body.raw = raw;"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 409', () => pm.response.to.have.status(409));",
+                  "pm.test('Trae la lista de conflictos', () => pm.expect(pm.response.json().conflictos).to.have.length.above(0));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Consultar programación",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/programaciones/{{idProgramacion}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "programaciones",
+                "{{idProgramacion}}"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Editar programación",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/programaciones/{{idProgramacion}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "programaciones",
+                "{{idProgramacion}}"
+              ]
+            },
+            "description": "RF-16. Vuelve a aplicar todas las validaciones.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dias\": [\n    \"MARTES\",\n    \"JUEVES\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Desactivar programación",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/programaciones/{{idProgramacion}}/desactivar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "programaciones",
+                "{{idProgramacion}}",
+                "desactivar"
+              ]
+            },
+            "description": "RF-16. Se puede reactivar."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Activar programación",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/programaciones/{{idProgramacion}}/activar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "programaciones",
+                "{{idProgramacion}}",
+                "activar"
+              ]
+            },
+            "description": "Vuelve a validar RF-17 y RF-18."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cancelar programación",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/programaciones/{{idProgramacion}}/cancelar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "programaciones",
+                "{{idProgramacion}}",
+                "cancelar"
+              ]
+            },
+            "description": "RF-16. Definitivo: ya no se puede editar ni reactivar."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "8. Dashboard",
+      "description": "RF-19 y RF-20.",
+      "item": [
+        {
+          "name": "Indicadores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/indicadores",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard",
+                "indicadores"
+              ]
+            },
+            "description": "RF-19. Totales calculados con datos reales."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Servicios del día",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/servicios-del-dia?fecha={{fechaHoy}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard",
+                "servicios-del-dia"
+              ],
+              "query": [
+                {
+                  "key": "fecha",
+                  "value": "{{fechaHoy}}"
+                }
+              ]
+            },
+            "description": "RF-20. Filtros opcionales: fecha (por defecto hoy), idRuta, idConductor, idVehiculo, estado."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "9. Cierre de sesión",
+      "description": "RF-02. Al final, porque invalida el token.",
+      "item": [
+        {
+          "name": "Cerrar sesión",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "logout"
+              ]
+            },
+            "description": "RF-02. Invalida el token actual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.collectionVariables.set('tokenCerrado', pm.collectionVariables.get('token'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Usar el token después de cerrar sesión",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/administrador/perfil",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "administrador",
+                "perfil"
+              ]
+            },
+            "description": "RF-02. El token cerrado ya no sirve. Vuelva a ejecutar \"Iniciar sesión\" para seguir probando."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 401', () => pm.response.to.have.status(401));",
+                  "pm.test('Sesión cerrada', () => pm.expect(pm.response.json().message).to.eql('La sesión fue cerrada. Inicie sesión de nuevo.'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
