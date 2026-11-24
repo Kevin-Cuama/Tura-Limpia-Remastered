@@ -10,7 +10,7 @@ La solución busca facilitar la organización de los recursos operativos mediant
 
 **Enlace: https://github.com/Kevin-Cuama/Tura-Limpia-Remastered**  
 
-**Usuario de prueba** [Correo]/[Contraseña]
+**Usuario de prueba** [admin@turalimpia.com]/[ Admin12345]
 
 ## ✨Funcionalidades  
 
@@ -91,7 +91,7 @@ JWT_SECRET=<pega aquí la clave que generaste>
 ADMIN_CORREO=admin@turalimpia.com  
 ADMIN_CONTRASENA=Admin12345`  
  El archivo `.env` nunca se sube a GitHub y no se muestra en capturas.  
-**4.3Crear las tablas y los datos de prueba**  
+**4.3 Crear las tablas y los datos de prueba**  
 `npm run migrate  
 npm run seed`  
 `migrate` crea 12 tablas. `seed` crea el administrador y datos de prueba (5 vehículos, 5 conductores, 3 rutas, 8 barrios, 3 turnos y 2 programaciones).  
@@ -137,7 +137,6 @@ Abre una tercera ventana de PowerShell y ejecuta los bloques en orden. En los ca
 Credenciales correctas → "Bienvenido administrador", con token. El token queda guardado en '$h' para los pasos siguientes:   
 ```$r = Invoke-RestMethod -Method Post -Uri http://localhost:3000/api/v1/login ContentType 'application/json' -Body '{"correo":"admin@turalimpia.com","contrasena":"Admin12345"}' $r.mensaje $h = @{ Authorization = "Bearer $($r.token)" } ``` 
 
-
 Ruta protegida sin token → 401 "Token no proporcionado.":  
 'Invoke-RestMethod -Uri http://localhost:3000/api/v1/administrador/perfil'  
 
@@ -169,7 +168,6 @@ Los mismos casos, con 'curl' para Linux o Mac, están en 'Backend/turalimpia/REA
 |'port 3000 already in use '|Ya hay otro backend corriendo. Cierra esa ventana.|  
 |El backend no se conecta a PostgreSQL|Abre Servicios de Windows y enciende 'postgresql-x64-16.'|  
 |El dashboard muestra un correo viejo|Cierra sesión, o presiona F12 → Application → Local Storage → Clear, y recarga.|  
-
 **9. Para volver a usarlo otro día**  
 Los pasos 1 a 4.4 se hacen una sola vez. Después solo hace falta  
 1. PostgreSQL arranca solo con Windows.
