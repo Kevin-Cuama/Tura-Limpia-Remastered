@@ -135,7 +135,11 @@ Abre una tercera ventana de PowerShell y ejecuta los bloques en orden. En los ca
 `Invoke-RestMethod -Method Post -Uri http://localhost:3000/api/v1/login ContentType 'application/json' -Body '{"correo":"admin@turalimpia.com","contrasena":"incorrecta"}'`  
 
 Credenciales correctas → "Bienvenido administrador", con token. El token queda guardado en '$h' para los pasos siguientes:   
-'$r = Invoke-RestMethod -Method Post -Uri http://localhost:3000/api/v1/login ContentType 'application/json' -Body '{"correo":"admin@turalimpia.com","contrasena":"Admin12345"}' $r.mensaje $h = @{ Authorization = "Bearer $($r.token)" }'  
+'$r = Invoke-RestMethod -Method Post -Uri http://localhost:3000/api/v1/login -  
+ContentType 'application/json' -Body  
+'{"correo":"admin@turalimpia.com","contrasena":"Admin12345"}'  
+$r.mensaje  
+$h = @{ Authorization = "Bearer $($r.token)" }'  
 
 Ruta protegida sin token → 401 "Token no proporcionado.":  
 'Invoke-RestMethod -Uri http://localhost:3000/api/v1/administrador/perfil'  
