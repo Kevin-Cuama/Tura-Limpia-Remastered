@@ -25,6 +25,7 @@ La solución busca facilitar la organización de los recursos operativos mediant
 | Dashboard | Indicadores de vehiculos, conductores y rutas, y consulta de los servicios del día con filtros. |  
 
 ## 🛠️ Tecnologias 
+
 | Capa          | Tecnología  |
 |---------------|-------------|  
 | Frontend      | Angular     |  
@@ -42,7 +43,8 @@ La solución busca facilitar la organización de los recursos operativos mediant
 * `Evidencias/` — Registros, capturas y soporte de pruebas/avances.
 ---
 
-## ⚙️ 1 Requisitos previos  
+## ⚙️ 1 Requisitos previos 
+
 |programa |versión |descarga| 
 |---------|--------|--------|  
 | Node.js      |22 o superior (LTS)     |nodejs.org|  
@@ -57,6 +59,7 @@ node -v
 
 
 ## 🚀 Instalación y Ejecución 
+
 **2 descargar el repositorio**  
 En PowerShell, desde la carpeta donde quieras guardar el proyecto:  
 `git clone https://github.com/Kevin-Cuama/Tura-Limpia-Remastered.git  
@@ -65,6 +68,7 @@ Cambia a la rama de la entrega 1. Mientras el PR #10 no esté fusionado:
 `git checkout acceso-administrativo`
   
 **3 crear la base de datos**  
+
 Abre la consola de PostgreSQL. Te pedirá la contraseña de postgres ; no se ve mientras escribes, es normal.
 `& 'C:\Program Files\PostgreSQL\16\bin\psql.exe' -U postgres -h localhost`  
 Cuando aparezca `postgres=#,` escribir una por una:  
@@ -72,12 +76,17 @@ Cuando aparezca `postgres=#,` escribir una por una:
 CREATE DATABASE tura_limpia OWNER tura;
 \q ` 
 Debe responder `CREATE ROLE` y `CREATE DATABASE`. Si dice que ya existen, se continúa. Estas credenciales son solo para desarrollo local.  
-**4 Backend**  
-**4.1 Instalar dependencias**  
+
+**4 Backend** 
+
+**4.1 Instalar dependencias** 
+
 Desde la carpeta del repositorio:  
 `cd Backend\tura-limpia npm install`  
 Los avisos de "vulnerabilities" son normales.No ejecutes `npm audit fix.`  
+
 **4.2 Crear el archivo .env**  
+
 `Copy-Item .env.example .env`  
 Genera una clave secreta y copia el texto que salga:  
 `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
@@ -91,18 +100,26 @@ JWT_SECRET=<pega aquí la clave que generaste>
 ADMIN_CORREO=admin@turalimpia.com  
 ADMIN_CONTRASENA=Admin12345`  
  El archivo `.env` nunca se sube a GitHub y no se muestra en capturas.  
+ 
 **4.3 Crear las tablas y los datos de prueba**  
+
 `npm run migrate  
 npm run seed`  
 `migrate` crea 12 tablas. `seed` crea el administrador y datos de prueba (5 vehículos, 5 conductores, 3 rutas, 8 barrios, 3 turnos y 2 programaciones).  
+
 **4.4 Pruebas (opcional)**  
+
 `npm test  
 npm run test:e2e`  
 Deben pasar 21 pruebas unitarias y 7 e2e.  
+
 **4.5 Levantar el backend**  
+
 `npm run start:dev`  
-Está listo cuando aparecen "Conexión exitosa con PostgreSQL" y "Nest application successfully started". Deja esta ventana abierta y no hagas clic dentro de ella.  
+Está listo cuando aparecen "Conexión exitosa con PostgreSQL" y "Nest application successfully started". Deja esta ventana abierta y no hagas clic dentro de ella.
+
 **5. Frontend**  
+
 Abre otra ventana de PowerShell (la del backend sigue corriendo) y entra a la carpeta del frontend dentro del repositorio:  
 `cd <ruta-del-repositorio>\Frontend\tura-limpia  
 npm install  
@@ -110,6 +127,7 @@ npm start`
 Está listo cuando aparece `Local: http://localhost:4200/` . Deja esta ventana abierta también. Los avisos de `install-scripts durante npm install` son normales.  
 
 **6. Entrar al sistema**   
+
 1. Abre **http://localhost:4200** en el navegador.
 2.  Inicia sesión con **admin@turalimpia.com / Admin12345**.
 3.  Debe entrar al dashboard.
@@ -131,6 +149,7 @@ Está listo cuando aparece `Local: http://localhost:4200/` . Deja esta ventana a
 | 7 |Volver a abrir http://localhost:4200/dashboard|Pide iniciar sesión otra vez|    
 
 **7.2 Contra la API, con PowerShell**  
+
 Abre una tercera ventana de PowerShell y ejecuta los bloques en orden. En los casos que deben fallar, PowerShell muestra el mensaje en rojo; eso es lo esperado. Credenciales incorrectas → 401 "Correo o contraseña incorrectos.":  
 `Invoke-RestMethod -Method Post -Uri http://localhost:3000/api/v1/login ContentType 'application/json' -Body '{"correo":"admin@turalimpia.com","contrasena":"incorrecta"}'`  
 
@@ -153,6 +172,7 @@ El mismo token después de cerrar sesión → 401 "La sesión fue cerrada. Inici
 'Invoke-RestMethod -Uri http://localhost:3000/api/v1/administrador/perfil Headers $h'  
 
 **7.3 Con Postman (alternativa)**  
+
 1 Importar 'Tura-Limpia-API.postman_collection.json.'  
 2. En las variables de la colección, poner 'contrasena' = 'Admin12345' y guardar. 'correo' ya viene como admin@turalimpia.com.  
 3. Ejecutar solo las carpetas "1. Autenticación" y "9. Cierre de sesión". Las carpetas 2 a 8 son de entregas siguientes y responden 404.  
@@ -168,17 +188,13 @@ Los mismos casos, con 'curl' para Linux o Mac, están en 'Backend/turalimpia/REA
 |'port 3000 already in use '|Ya hay otro backend corriendo. Cierra esa ventana.|  
 |El backend no se conecta a PostgreSQL|Abre Servicios de Windows y enciende 'postgresql-x64-16.'|  
 |El dashboard muestra un correo viejo|Cierra sesión, o presiona F12 → Application → Local Storage → Clear, y recarga.|  
+
 **9. Para volver a usarlo otro día**  
 Los pasos 1 a 4.4 se hacen una sola vez. Después solo hace falta  
 1. PostgreSQL arranca solo con Windows.
 2. Backend: 'npm run start:dev' en 'Backend\tura-limpia.'
 3. Frontend, en otra ventana: 'npm start' en 'Frontend\tura-limpia.'
 4.  Abrir http://localhost:4200. Para apagarlos, presiona Ctrl + C en cada ventana.
-
-
-
-
-
 
 
 
