@@ -1,0 +1,121 @@
+<header class="encabezado">
+  <div>
+    <h1>{{ saludo() }}, {{ nombre() }}</h1>
+    <p>Así está la operación de recolección y barrido.</p>
+  </div>
+  <button class="boton boton--secundario" type="button" (click)="cargar()" [disabled]="cargando()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"
+      [class.girando]="cargando()">
+      <path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v4h-4" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+    Actualizar
+  </button>
+</header>
+
+@if (error(); as mensaje) {
+  <div class="aviso aviso--error" role="alert">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" /><path d="M12 7.5v5.5M12 16.5v.01" stroke-linecap="round" />
+    </svg>
+    <span>No se pudieron cargar los indicadores. {{ mensaje }}</span>
+  </div>
+}
+
+@if (resultado()?.origen === 'ejemplo') {
+  <div class="aviso aviso--info" role="status">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 7.5v.01" stroke-linecap="round" />
+    </svg>
+    <span>
+      Estás viendo datos de ejemplo. Cuando el backend publique
+      <code>GET /api/v1/dashboard/indicadores</code>, este panel mostrará las cifras reales.
+    </span>
+  </div>
+}
+
+<section class="indicadores" aria-label="Indicadores de la operación" [attr.aria-busy]="cargando()">
+  @if (!resultado() && cargando()) {
+    @for (i of [1, 2, 3]; track i) {
+      <div class="grupo grupo--cargando" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+    }
+    <p class="solo-lectores" role="status">Cargando indicadores…</p>
+  }
+
+  @for (grupo of grupos(); track grupo.clave) {
+    <article class="grupo" [class]="'grupo--' + grupo.clave">
+      <div class="grupo__cabeza">
+        <h2>{{ grupo.titulo }}</h2>
+        <a [routerLink]="grupo.enlace">Gestionar</a>
+      </div>
+
+      <p class="grupo__total">
+        <span class="grupo__cifra">{{ grupo.total }}</span>
+        {{ grupo.unidad }}
+      </p>
+
+      <div class="estados" role="img" [attr.aria-label]="describir(grupo)">
+        @for (parte of grupo.partes; track parte.etiqueta) {
+          @if (parte.valor > 0) {
+            <span class="estados__segmento" [style.flex-grow]="parte.valor" [style.background]="parte.color"
+              [title]="parte.etiqueta + ': ' + parte.valor + ' (' + porcentaje(parte, grupo) + '%)'"></span>
+          }
+        }
+      </div>
+
+      <ul class="leyenda">
+        @for (parte of grupo.partes; track parte.etiqueta) {
+          <li>
+            <span class="leyenda__icono" [style.background]="parte.color"
+              [class.leyenda__icono--oscuro]="parte.textoOscuro" aria-hidden="true">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                @switch (parte.icono) {
+                  @case ('ok') { <path d="M4.5 8.2l2.3 2.3 4.7-4.9" /> }
+                  @case ('transito') { <path d="M4 8h7.5M8.5 5l3 3-3 3" /> }
+                  @case ('taller') { <path d="M10.5 3.5a2.6 2.6 0 0 0-3.2 3.3L3.6 10.5l1.9 1.9 3.7-3.7a2.6 2.6 0 0 0 3.3-3.2l-1.5 1.5-1.6-.4-.4-1.6z" stroke-width="1.5" /> }
+                  @case ('detenido') { <path d="M5.5 5.5l5 5M10.5 5.5l-5 5" /> }
+                  @case ('inactivo') { <path d="M5 8h6" /> }
+                  @case ('pausa') { <path d="M6.3 5v6M9.7 5v6" /> }
+                }
+              </svg>
+            </span>
+            <span class="leyenda__texto">{{ parte.etiqueta }}</span>
+            <strong>{{ parte.valor }}</strong>
+          </li>
+        }
+        @if (grupo.extra; as extra) {
+          <li class="leyenda__extra">
+            <span class="leyenda__icono leyenda__icono--hueco" aria-hidden="true">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+                <rect x="3" y="4" width="10" height="9" rx="1.5" /><path d="M3 7h10M6 2.5v2M10 2.5v2" />
+              </svg>
+            </span>
+            <span class="leyenda__texto">{{ extra.etiqueta }}</span>
+            <strong>{{ extra.valor }}</strong>
+          </li>
+        }
+      </ul>
+    </article>
+  }
+</section>
+
+<section class="modulos" aria-labelledby="titulo-modulos">
+  <h2 id="titulo-modulos">Módulos</h2>
+  <ul class="modulos__lista">
+    @for (modulo of modulos; track modulo.ruta) {
+      <li>
+        <a [routerLink]="modulo.ruta">
+          <span>
+            <strong>{{ modulo.nombre }}</strong>
+            <span>{{ modulo.descripcion }}</span>
+          </span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </a>
+      </li>
+    }
+  </ul>
+</section>

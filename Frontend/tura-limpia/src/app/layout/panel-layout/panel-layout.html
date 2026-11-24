@@ -1,0 +1,63 @@
+<div class="panel" [class.panel--menu-abierto]="menuAbierto()">
+  <aside class="lateral" id="menu-principal">
+    <a class="lateral__logo" routerLink="/dashboard">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <path d="M6 25 V16 H16 V7 H26" fill="none" stroke="currentColor" stroke-width="3"
+          stroke-linecap="round" stroke-linejoin="round" />
+        <circle cx="6" cy="25" r="3.5" fill="#f2c12e" />
+        <circle cx="26" cy="7" r="3.5" fill="#f2c12e" />
+      </svg>
+      Tura Limpia
+    </a>
+
+    <nav aria-label="Menú principal">
+      <ul class="recorrido">
+        @for (enlace of enlaces; track enlace.ruta) {
+          <li>
+            <a [routerLink]="enlace.ruta" routerLinkActive="activo" ariaCurrentWhenActive="page">
+              <span class="recorrido__parada" aria-hidden="true"></span>
+              {{ enlace.texto }}
+            </a>
+          </li>
+        }
+      </ul>
+    </nav>
+
+    @if (administrador(); as admin) {
+      <div class="lateral__usuario">
+        <span class="lateral__iniciales" aria-hidden="true">{{ admin.nombre.charAt(0) }}</span>
+        <div>
+          <strong>{{ admin.nombre }}</strong>
+          <span>{{ admin.correo }}</span>
+        </div>
+      </div>
+    }
+  </aside>
+
+  <div class="principal">
+    <header class="barra">
+      <button class="barra__menu" type="button" (click)="menuAbierto.set(!menuAbierto())"
+        aria-controls="menu-principal" [attr.aria-expanded]="menuAbierto()" aria-label="Abrir menú">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round" />
+        </svg>
+      </button>
+
+      <span class="barra__fecha">{{ hoy | date: "EEEE d 'de' MMMM 'de' y" }}</span>
+
+      <button class="boton boton--secundario" type="button" (click)="cerrarSesion()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 16l4-4-4-4M14 12H4"
+            stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Cerrar sesión
+      </button>
+    </header>
+
+    <main class="contenido">
+      <router-outlet />
+    </main>
+  </div>
+
+  <div class="velo" (click)="menuAbierto.set(false)" aria-hidden="true"></div>
+</div>
