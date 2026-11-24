@@ -10,6 +10,10 @@ La solución busca facilitar la organización de los recursos operativos mediant
 
 **Enlace: https://github.com/Kevin-Cuama/Tura-Limpia-Remastered**  
 
+**Release semana 1:** https://github.com/Kevin-Cuama/Tura-Limpia-Remastered/releases/tag/semana-1  
+
+**Evidencias de funcionamiento:** [Evidencias/README.md](Evidencias/README.md) (capturas de la semana 1)  
+
 **Usuario de prueba** [admin@turalimpia.com]/[ Admin12345]
 
 ## ✨Funcionalidades  
@@ -202,9 +206,7 @@ Los pasos 1 a 4.4 se hacen una sola vez. Después solo hace falta
 4.  Abrir http://localhost:4200. Para apagarlos, presiona Ctrl + C en cada ventana.
 
 
-
-## Nombre el Equipo: EcoTura (Empresa 2)
-
+## 🏷️ Nombre del equipo: EcoTura (Empresa 2)
 
 ## 👥 Equipo de Desarrollo
 
