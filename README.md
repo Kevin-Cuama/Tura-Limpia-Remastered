@@ -91,7 +91,7 @@ JWT_SECRET=<pega aquí la clave que generaste>
 ADMIN_CORREO=admin@turalimpia.com  
 ADMIN_CONTRASENA=Admin12345`  
  El archivo `.env` nunca se sube a GitHub y no se muestra en capturas.  
-**4.3Crear las tablas y los datos de prueba** 
+**4.3Crear las tablas y los datos de prueba**  
 `npm run migrate  
 npm run seed`  
 `migrate` crea 12 tablas. `seed` crea el administrador y datos de prueba (5 vehículos, 5 conductores, 3 rutas, 8 barrios, 3 turnos y 2 programaciones).  
