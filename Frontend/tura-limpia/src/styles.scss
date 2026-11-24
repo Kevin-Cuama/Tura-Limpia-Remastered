@@ -1,0 +1,192 @@
+/* =========================================================
+   Tura Limpia — estilos globales
+   Paleta inspirada en Buenaventura: el verde del manglar
+   y el amarillo de alta visibilidad de los equipos de recolección.
+   Tipografía: Barlow, nacida de la señalización vial (rutas).
+   ========================================================= */
+
+:root {
+  /* Color base */
+  --mangle-900: #0b2f2c;
+  --mangle-800: #10403b;
+  --mangle-600: #1d6158;
+  --senal: #f2c12e;
+  --concreto: #e8edeb;
+  --superficie: #fbfcfb;
+
+  /* Texto y líneas */
+  --tinta: #142b28;
+  --tinta-2: #4b605c;
+  --tinta-3: #6e807c;
+  --linea: #cbd5d2;
+  --linea-suave: #dfe6e3;
+
+  /* Estados (siempre acompañados de ícono y texto) */
+  --estado-bien: #0ca30c;
+  --estado-transito: #2f6fb0;
+  --estado-alerta: #fab219;
+  --estado-critico: #d03b3b;
+  --estado-neutro: #9aa6a3;
+  --texto-error: #a32424;
+  --fondo-error: #fbeaea;
+  --texto-info: #1d4f7d;
+  --fondo-info: #e7f0f8;
+
+  /* Tipografía (escala 1.25) */
+  --fuente: 'Barlow', system-ui, sans-serif;
+  --fuente-titulos: 'Barlow Semi Condensed', 'Barlow', system-ui, sans-serif;
+  --t-sm: 0.875rem;
+  --t-base: 1rem;
+  --t-md: 1.25rem;
+  --t-lg: 1.5625rem;
+  --t-xl: 1.9375rem;
+  --t-2xl: 2.4375rem;
+  --t-cifra: 3rem;
+
+  /* Radios: grande para paneles, pequeño para controles */
+  --radio-panel: 14px;
+  --radio-control: 8px;
+
+  --foco: 0 0 0 3px var(--superficie), 0 0 0 5px var(--mangle-600);
+
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  font-family: var(--fuente);
+  font-size: var(--t-base);
+  line-height: 1.5;
+  color: var(--tinta);
+  background: var(--concreto);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--fuente-titulos);
+  font-weight: 600;
+  line-height: 1.15;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--mangle-600);
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--foco);
+  border-radius: 4px;
+}
+
+.solo-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- Botones ---------- */
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0 1.125rem;
+  font: 600 var(--t-base) / 1 var(--fuente);
+  border-radius: var(--radio-control);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 120ms ease, border-color 120ms ease;
+
+  &:disabled {
+    cursor: progress;
+    opacity: 0.75;
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+    flex: none;
+  }
+}
+
+.boton--principal {
+  background: var(--mangle-800);
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    background: var(--mangle-900);
+  }
+}
+
+.boton--secundario {
+  background: transparent;
+  color: var(--tinta);
+  border-color: var(--linea);
+
+  &:hover:not(:disabled) {
+    border-color: var(--tinta-3);
+    background: var(--superficie);
+  }
+}
+
+/* ---------- Avisos ---------- */
+.aviso {
+  display: flex;
+  gap: 0.625rem;
+  align-items: flex-start;
+  padding: 0.75rem 0.875rem;
+  border-radius: var(--radio-control);
+  font-size: var(--t-sm);
+  line-height: 1.45;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    flex: none;
+    margin-top: 1px;
+  }
+}
+
+.aviso--error {
+  background: var(--fondo-error);
+  color: var(--texto-error);
+}
+
+.aviso--info {
+  background: var(--fondo-info);
+  color: var(--texto-info);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

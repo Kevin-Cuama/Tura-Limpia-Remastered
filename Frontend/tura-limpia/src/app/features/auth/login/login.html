@@ -1,0 +1,124 @@
+<main class="login">
+  <!-- Panel de marca: un recorrido de recolección sobre las calles -->
+  <section class="marca" aria-label="Tura Limpia">
+    <div class="marca__logo">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <path d="M6 25 V16 H16 V7 H26" fill="none" stroke="currentColor" stroke-width="3"
+          stroke-linecap="round" stroke-linejoin="round" />
+        <circle cx="6" cy="25" r="3.5" fill="#f2c12e" />
+        <circle cx="26" cy="7" r="3.5" fill="#f2c12e" />
+      </svg>
+      <span>Tura Limpia</span>
+    </div>
+
+    <div class="marca__mapa" aria-hidden="true">
+      <svg viewBox="-40 90 900 700" preserveAspectRatio="xMidYMid slice">
+        <path class="mapa__agua" d="M-400 1200 V600 C-60 620 60 680 170 740 C260 790 330 850 420 1200 Z" />
+        <g transform="rotate(-14 410 440)">
+          <g class="mapa__calles">
+            @for (x of calles.verticales; track x) {
+              <line [attr.x1]="x" y1="-400" [attr.x2]="x" y2="1300" />
+            }
+            @for (y of calles.horizontales; track y) {
+              <line x1="-400" [attr.y1]="y" x2="1300" [attr.y2]="y" />
+            }
+            <line x1="190" y1="260" x2="410" y2="20" />
+            <line x1="520" y1="740" x2="740" y2="500" />
+          </g>
+          <polyline class="mapa__ruta" pathLength="1"
+            points="80,620 190,620 190,500 410,500 410,380 520,380 520,260 740,260" />
+          @for (p of paradas; track $index) {
+            <circle class="mapa__parada" [attr.cx]="p.x" [attr.cy]="p.y" r="9"
+              [style.--orden]="$index" />
+          }
+          <circle class="mapa__extremo" cx="80" cy="620" r="13" />
+          <circle class="mapa__extremo mapa__extremo--fin" cx="740" cy="260" r="13" />
+        </g>
+      </svg>
+    </div>
+
+    <p class="marca__lema">
+      Rutas de recolección y barrido<br />
+      <span>Buenaventura, Valle del Cauca</span>
+    </p>
+  </section>
+
+  <!-- Formulario -->
+  <section class="acceso">
+    <form class="formulario" [formGroup]="formulario" (ngSubmit)="iniciarSesion()" novalidate>
+      <h1>Iniciar sesión</h1>
+      <p class="formulario__ayuda">
+        Entra con tu correo de administrador para ver el estado de la operación.
+      </p>
+
+      @if (motivo() === 'expirada' && !error()) {
+        <div class="aviso aviso--info" role="status">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" stroke-linecap="round" />
+          </svg>
+          <span>Tu sesión venció. Vuelve a iniciar sesión para continuar.</span>
+        </div>
+      }
+
+      @if (error(); as mensaje) {
+        <div class="aviso aviso--error" role="alert">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" /><path d="M12 7.5v5.5M12 16.5v.01" stroke-linecap="round" />
+          </svg>
+          <span>{{ mensaje }}</span>
+        </div>
+      }
+
+      <div class="campo" [class.campo--invalido]="campoInvalido('correo')">
+        <label for="correo">Correo electrónico</label>
+        <input id="correo" type="email" formControlName="correo" autocomplete="username"
+          placeholder="nombre@turalimpia.com"
+          [attr.aria-invalid]="campoInvalido('correo')" aria-describedby="correo-error" />
+        @if (campoInvalido('correo')) {
+          <small id="correo-error">
+            @if (formulario.controls.correo.hasError('required')) {
+              Escribe tu correo.
+            } @else {
+              Revisa el correo: debe tener la forma nombre&#64;dominio.com.
+            }
+          </small>
+        }
+      </div>
+
+      <div class="campo" [class.campo--invalido]="campoInvalido('contrasena')">
+        <label for="contrasena">Contraseña</label>
+        <div class="campo__clave">
+          <input id="contrasena" [type]="mostrarContrasena() ? 'text' : 'password'"
+            formControlName="contrasena" autocomplete="current-password"
+            [attr.aria-invalid]="campoInvalido('contrasena')" aria-describedby="contrasena-error" />
+          <button type="button" class="campo__ver" (click)="mostrarContrasena.set(!mostrarContrasena())"
+            [attr.aria-pressed]="mostrarContrasena()"
+            [attr.aria-label]="mostrarContrasena() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+            @if (mostrarContrasena()) {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M3 3l18 18M10.6 6.1A9.8 9.8 0 0 1 12 6c5 0 9 6 9 6a16 16 0 0 1-2.6 3.2M6.6 6.6C4.3 8.1 3 12 3 12s4 6 9 6c1.6 0 3-.4 4.3-1.1" stroke-linecap="round" />
+                <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" stroke-linecap="round" />
+              </svg>
+            } @else {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M3 12s4-6 9-6 9 6 9 6-4 6-9 6-9-6-9-6Z" /><circle cx="12" cy="12" r="3" />
+              </svg>
+            }
+          </button>
+        </div>
+        @if (campoInvalido('contrasena')) {
+          <small id="contrasena-error">Escribe tu contraseña.</small>
+        }
+      </div>
+
+      <button class="boton boton--principal formulario__enviar" type="submit" [disabled]="cargando()">
+        @if (cargando()) {
+          <span class="girando" aria-hidden="true"></span>
+          Verificando…
+        } @else {
+          Iniciar sesión
+        }
+      </button>
+    </form>
+  </section>
+</main>
