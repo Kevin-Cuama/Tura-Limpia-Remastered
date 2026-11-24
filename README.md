@@ -122,7 +122,19 @@ Está listo cuando aparece `Local: http://localhost:4200/` . Deja esta ventana a
   
 |# |Que hacer |Resultado esperado| 
 |--|----------|------------------|  
-| 1 |Sin haber iniciado sesión, abrir http://localhost:4200/dashboard |Redirige al login|   
+| 1 |Sin haber iniciado sesión, abrir http://localhost:4200/dashboard |Redirige al login|  
+| 2 |Iniciar sesión con una contraseña incorrecta |Muestra un mensaje de error|  
+| 3 |Iniciar sesión con admin@turalimpia.com / Admin12345 |Entra al dashboard|  
+| 4 |Recargar la página (F5) dentro del dashboard |La sesión sigue abierta|   
+| 5 |Clic en Vehículos, Conductores, Rutas o Programación |Abre la página del módulo ("en construcción" en esta entrega)|   
+| 6 |Clic en Cerrar sesión |Vuelve al login|   
+| 7 |Volver a abrir http://localhost:4200/dashboard|Pide iniciar sesión otra vez|   
+
+
+
+
+
+
 
 
 ## 👥 Equipo de Desarrollo
