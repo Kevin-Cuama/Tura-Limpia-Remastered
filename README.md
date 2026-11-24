@@ -118,7 +118,7 @@ Está listo cuando aparece `Local: http://localhost:4200/` . Deja esta ventana a
 **7. Verificar el acceso administrativo**
     se verifica de dos formas: en el navegador (lo que ve el usuario) y contra la API (lo que valida el backend). Las dos necesitan el backend y el frontend corriendo.  
     
-  **7.1 En el navegador**  
+  **7.1 En el navegador** 
   
 |# |Que hacer |Resultado esperado| 
 |--|----------|------------------|  
@@ -128,7 +128,55 @@ Está listo cuando aparece `Local: http://localhost:4200/` . Deja esta ventana a
 | 4 |Recargar la página (F5) dentro del dashboard |La sesión sigue abierta|   
 | 5 |Clic en Vehículos, Conductores, Rutas o Programación |Abre la página del módulo ("en construcción" en esta entrega)|   
 | 6 |Clic en Cerrar sesión |Vuelve al login|   
-| 7 |Volver a abrir http://localhost:4200/dashboard|Pide iniciar sesión otra vez|   
+| 7 |Volver a abrir http://localhost:4200/dashboard|Pide iniciar sesión otra vez|    
+
+**7.2 Contra la API, con PowerShell**  
+Abre una tercera ventana de PowerShell y ejecuta los bloques en orden. En los casos que deben fallar, PowerShell muestra el mensaje en rojo; eso es lo esperado. Credenciales incorrectas → 401 "Correo o contraseña incorrectos.":  
+`Invoke-RestMethod -Method Post -Uri http://localhost:3000/api/v1/login ContentType 'application/json' -Body '{"correo":"admin@turalimpia.com","contrasena":"incorrecta"}'`  
+
+Credenciales correctas → "Bienvenido administrador", con token. El token queda guardado en $h para los pasos siguientes:  
+
+'$r = Invoke-RestMethod -Method Post -Uri http://localhost:3000/api/v1/login ContentType 'application/json' -Body '{"correo":"admin@turalimpia.com","contrasena":"Admin12345"}' $r.mensaje $h = @{ Authorization = "Bearer $($r.token)" }'  
+
+Ruta protegida sin token → 401 "Token no proporcionado.":  
+'Invoke-RestMethod -Uri http://localhost:3000/api/v1/administrador/perfil'  
+
+Ruta protegida con un token falso → 401 "Token inválido o expirado.":  
+'Invoke-RestMethod -Uri http://localhost:3000/api/v1/administrador/perfil Headers @{ Authorization = 'Bearer token_falso' }' 
+
+Ruta protegida con el token válido → solo id, nombre y correo:  
+'Invoke-RestMethod -Uri http://localhost:3000/api/v1/administrador/perfil Headers $h' 
+
+Cerrar sesión → "Sesión cerrada correctamente.":  
+'Invoke-RestMethod -Method Post -Uri http://localhost:3000/api/v1/logout Headers $h'  
+
+El mismo token después de cerrar sesión → 401 "La sesión fue cerrada. Inicie sesión de nuevo.":  
+'Invoke-RestMethod -Uri http://localhost:3000/api/v1/administrador/perfil Headers $h'  
+
+**7.3 Con Postman (alternativa)**  
+1 Importar 'Tura-Limpia-API.postman_collection.json.'  
+2. En las variables de la colección, poner 'contrasena' = 'Admin12345' y guardar. 'correo' ya viene como admin@turalimpia.com.  
+3. Ejecutar solo las carpetas "1. Autenticación" y "9. Cierre de sesión". Las carpetas 2 a 8 son de entregas siguientes y responden 404.  
+Los mismos casos, con 'curl' para Linux o Mac, están en 'Backend/turalimpia/README.md' , sección "Verificar el acceso administrativo".
+
+**8. Problemas comunes**  
+
+| Problema         | Solución  |
+|---------------|-------------|  
+|El login se queda en "Verificando..." | Se hizo clic dentro de la ventana del backend y Windows la congeló ("modo de selección"). Entra a esa ventana y presiona **Esc.**|  
+|'psql' no se reconoce como comando|Usa la ruta completa: '& 'C:\Program Files\PostgreSQL\16\bin\psql.exe' ...'|  
+| 'password authentication failed for user "tura" '|Revisa que el '.env' tenga 'DB_USER=tura' y 'DB_PASS=tura' , y que el paso 3 haya funcionado.|  
+|'port 3000 already in use '|Ya hay otro backend corriendo. Cierra esa ventana.|  
+|El backend no se conecta a PostgreSQL|Abre Servicios de Windows y enciende 'postgresql-x64-16.'|  
+|El dashboard muestra un correo viejo|Cierra sesión, o presiona F12 → Application → Local Storage → Clear, y recarga.|  
+
+**9. Para volver a usarlo otro día**  
+Los pasos 1 a 4.4 se hacen una sola vez. Después solo hace falta  
+1. PostgreSQL arranca solo con Windows.
+2. Backend: 'npm run start:dev' en 'Backend\tura-limpia.'
+3. Frontend, en otra ventana: 'npm start' en 'Frontend\tura-limpia.'
+4.  Abrir http://localhost:4200. Para apagarlos, presiona Ctrl + C en cada ventana.
+
 
 
 
