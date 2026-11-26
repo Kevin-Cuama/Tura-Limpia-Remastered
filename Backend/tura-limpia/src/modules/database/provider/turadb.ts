@@ -4,8 +4,13 @@ import { Sequelize } from 'sequelize-typescript';
 
 import { Administrador } from '../../administrador/models/administrador.model.js';
 import { TokenRevocado } from '../../autenticacion/models/token-revocado.model.js';
+import { Vehiculo } from '../../vehiculos/models/vehiculo.model.js';
 
-export const models = [Administrador, TokenRevocado];
+export const models = [
+  Administrador,
+  TokenRevocado,
+  Vehiculo,
+];
 
 export const TURADB = {
   provide: 'SEQUELIZE_CITAS',
